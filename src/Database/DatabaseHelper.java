@@ -76,7 +76,7 @@ public class DatabaseHelper {
             System.out.println(e.getMessage());
         }
     }
-    public static void getAllData(){
+   public static void getAllData(){
             String sql = "SELECT product_name,sold_price,buy_price,quantity FROM products";
 
             try{
@@ -85,12 +85,16 @@ public class DatabaseHelper {
                 String url = "jdbc:sqlite:"+ name;  //
                 conn = DriverManager.getConnection(url);
                 Statement stmt  = conn.createStatement();
-                ResultSet rs    = stmt.executeQuery(sql);
+                ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
                 // loop through the result set
                 while (rs.next()) {
                     System.out.println(rs.getString("product_name") +  "\t" +
                             rs.getDouble("sold_price") + "\t" +rs.getDouble("buy_price")+"\t" +
-                            rs.getDouble("quantity"));
+                            rs.getInt("quantity"));
+
+                    /*This is how we can add data and use it in the system*/
+                    Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"));
+                    MainClass.data.add(p);
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
