@@ -7,6 +7,7 @@ public class mainClass {
         DatabaseHelper.insertData(new Product("Test",1000.0,1200.0,30));
         DatabaseHelper.insertData(new Product("Test1",1000.0,1200.0,30));
         DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30));
+        DatabaseHelper.deleteData("Test2");
         DatabaseHelper.getAllData();
 
          /*At the first time the table will created and data will be added successfully
