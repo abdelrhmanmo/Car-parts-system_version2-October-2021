@@ -96,8 +96,21 @@ public class DatabaseHelper {
                 System.out.println(e.getMessage());
             }
     }
-    public static void deleteData(String name){
+    public static void deleteData(String productName){
+        String sql = "DELETE FROM products WHERE product_name = ?";
 
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, productName);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void updateData (Product product){
