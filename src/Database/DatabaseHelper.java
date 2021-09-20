@@ -12,38 +12,96 @@ package Database;
 
 //try this code if the console print (connection to SQLite has been established) then it works , if not that it doesn't work
 
+import classes.Product;
+
 import java.sql.*;
 
 public class DatabaseHelper {
 
     private static String name; // name of database
-
     public static void setName(String name) {
         DatabaseHelper.name = name; // set the name
     }
 
-    public static void connectToDatabase() {
-        Connection conn = null; // here we make a null connection for make sure that we started from an unknown path
+    public static void createNewDatabase() {
+        String url = "jdbc:sqlite:"+ name;
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            if (conn != null) {
+                DatabaseMetaData meta = conn.getMetaData();
+                System.out.println("The driver name is " + meta.getDriverName());
+                System.out.println("A new database has been created.");
+                createTables();
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void createTables(){
+        String table1 = "CREATE TABLE products (product_name TEXT PRIMARY KEY, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL)";
+        String table2 = "CREATE TABLE soldProduct (product_name REFERENCES products(product_name), sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity integer NOT NULL)";
         try {
+            Connection conn;
             // db parameters
             String url = "jdbc:sqlite:"+ name;  // the database file is in the same path of this class
             // create a connection to the database
             conn = DriverManager.getConnection(url);
+            Statement stmt = conn.createStatement();
 
-            /* if the console print this that mean it is work and he has connect to the database*/
-            System.out.println("Connection to SQLite has been established.");
+            stmt.execute(table1);
+            stmt.execute(table2);
         } catch (SQLException e) {
-            /*if the console print this that mean there is an exception*/
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                //** close the connection after finish*////
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
         }
     }
+
+    public static void insertData(Product product){
+        String sql = "INSERT INTO products(product_name,sold_price,buy_price,quantity) VALUES(?,?,?,?)";
+
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, product.getName());
+            pstmt.setDouble(2, product.getSoldPrice());
+            pstmt.setDouble(3, product.getBuyPrice());
+            pstmt.setDouble(4, product.getQuantity());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    public static void getAllData(){
+            String sql = "SELECT product_name,sold_price,buy_price,quantity FROM products";
+
+            try{
+                Connection conn;
+                // db parameters
+                String url = "jdbc:sqlite:"+ name;  //
+                conn = DriverManager.getConnection(url);
+                Statement stmt  = conn.createStatement();
+                ResultSet rs    = stmt.executeQuery(sql);
+                // loop through the result set
+                while (rs.next()) {
+                    System.out.println(rs.getString("product_name") +  "\t" +
+                            rs.getDouble("sold_price") + "\t" +rs.getDouble("buy_price")+"\t" +
+                            rs.getDouble("quantity"));
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+    }
+    public static void deleteData(String name){
+
+    }
+
+    public static void updateData (Product product){
+
+    }
+
 }
