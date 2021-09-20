@@ -18,7 +18,23 @@ public class Menu extends JPanel {
     }
     private void buttonsActions(){
         sellBtn.addActionListener((ActionEvent ae) ->{
-
+            new SellPage();
+            frame.dispose();
+        });
+        addBtn.addActionListener((ActionEvent ae) ->{
+            System.out.println("ADD Button !!");
+        });
+        wantedBtn.addActionListener((ActionEvent ae) ->{
+            System.out.println("Wanted Button !!");
+        });
+        showBtn.addActionListener((ActionEvent ae) ->{
+            System.out.println("SHOW Button !!");
+        });
+        updateBtn.addActionListener((ActionEvent ae) ->{
+            System.out.println("Update Button !!");
+        });
+        reportsBtn.addActionListener((ActionEvent ae) ->{
+            System.out.println("Report Button !!");
         });
     }
     private void Design(){

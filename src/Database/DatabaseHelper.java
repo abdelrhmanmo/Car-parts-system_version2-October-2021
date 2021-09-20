@@ -19,6 +19,7 @@ import java.sql.*;
 public class DatabaseHelper {
 
     private static String name; // name of database
+
     public static void setName(String name) {
         DatabaseHelper.name = name; // set the name
     }
@@ -78,7 +79,7 @@ public class DatabaseHelper {
     }
    public static void getAllData(){
             String sql = "SELECT product_name,sold_price,buy_price,quantity FROM products";
-
+            
             try{
                 Connection conn;
                 // db parameters
@@ -93,8 +94,12 @@ public class DatabaseHelper {
                             rs.getInt("quantity"));
 
                     /*This is how we can add data and use it in the system*/
-                    Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"));
-                    MainClass.data.add(p);
+                    Product p = new Product(rs.getString("product_name"),
+                            rs.getDouble("sold_price"),rs.getDouble("buy_price"),
+                            rs.getInt("quantity"));
+                    
+                    //MainClass.data.add(p);
+                    databaseOperations.data.add(p);
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -115,6 +120,29 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static int getNumberOfRows(){
+
+        String sql = "SELECT product_name,sold_price,buy_price,quantity FROM products";
+        try{
+
+            int counter = 0;
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;  //
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+                counter++;
+            }
+            return counter;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
     }
 
     public static void updateData (Product product){

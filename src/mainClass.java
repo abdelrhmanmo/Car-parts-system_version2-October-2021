@@ -1,26 +1,12 @@
+
+import Database.*;
+import classes.Product;
+import java.util.ArrayList;
+
 public class mainClass {
-    
-    /*The array list that will get data from database (please check getAllData function in DatabaseHelper Class)*/
-    public static ArrayList<Product> data = new ArrayList<Product>();
-    
+
     public static void main(String[] args) {
-
-        //try to run after deleting system.db
-         DatabaseHelper.setName("system.db"); // db is extension for database file
-        DatabaseHelper.createNewDatabase();
-        DatabaseHelper.insertData(new Product("Test",1000.0,1200.0,30));
-        DatabaseHelper.insertData(new Product("Test1",1000.0,1200.0,30));
-        DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30));
-        DatabaseHelper.deleteData("Test2");
-        DatabaseHelper.getAllData();
-        System.out.println(data.get(0).getQuantity()); // expected //30
-         /*At the first time the table will created and data will be added successfully
-          In Second time the table will not be created again and the console will give you a message that the tables is already exsist
-          Try to add another data and test it (hope it work successfully)
-          **/
-        
+        new databaseOperations();
         new Menu();
-
-
     }
 }
