@@ -2,9 +2,11 @@ public class mainClass {
     public static void main(String[] args) {
 
         //try to run after deleting system.db
-        DatabaseHelper.setName("system.db"); // db is extension for database file
+         DatabaseHelper.setName("system.db"); // db is extension for database file
         DatabaseHelper.createNewDatabase();
         DatabaseHelper.insertData(new Product("Test",1000.0,1200.0,30));
+        DatabaseHelper.insertData(new Product("Test1",1000.0,1200.0,30));
+        DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30));
         DatabaseHelper.getAllData();
 
          /*At the first time the table will created and data will be added successfully
