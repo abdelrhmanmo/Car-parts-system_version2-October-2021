@@ -15,11 +15,13 @@ package Database;
 import classes.Product;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class DatabaseHelper {
 
     private static String name; // name of database
-
     public static void setName(String name) {
         DatabaseHelper.name = name; // set the name
     }
@@ -42,8 +44,8 @@ public class DatabaseHelper {
     }
 
     private static void createTables(){
-        String table1 = "CREATE TABLE products (product_name TEXT PRIMARY KEY, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL)";
-        String table2 = "CREATE TABLE soldProduct (product_name REFERENCES products(product_name), sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity integer NOT NULL)";
+        String table1 = "CREATE TABLE products (product_name TEXT PRIMARY KEY, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL)";
+        String table2 = "CREATE TABLE soldProducts (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL)";
         try {
             Connection conn;
             // db parameters
@@ -59,8 +61,8 @@ public class DatabaseHelper {
         }
     }
 
-    public static void insertData(Product product){
-        String sql = "INSERT INTO products(product_name,sold_price,buy_price,quantity) VALUES(?,?,?,?)";
+    public static String insertData(Product product){
+        String sql = "INSERT INTO products(product_name,sold_price,buy_price,quantity,adding_product_date) VALUES(?,?,?,?,?)";
 
         try  {
             Connection conn;
@@ -72,14 +74,18 @@ public class DatabaseHelper {
             pstmt.setDouble(2, product.getSoldPrice());
             pstmt.setDouble(3, product.getBuyPrice());
             pstmt.setDouble(4, product.getQuantity());
+            pstmt.setString(5, product.getAddingToSystemDate());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            return "This Product Already Exist";
         }
+        getAllData();
+        return "Inserted Successfully!";
     }
-   public static void getAllData(){
-            String sql = "SELECT product_name,sold_price,buy_price,quantity FROM products";
-            
+    public static void getAllData(){
+            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date FROM products";
+            databaseOperations.data.clear();
             try{
                 Connection conn;
                 // db parameters
@@ -91,18 +97,17 @@ public class DatabaseHelper {
                 while (rs.next()) {
                     System.out.println(rs.getString("product_name") +  "\t" +
                             rs.getDouble("sold_price") + "\t" +rs.getDouble("buy_price")+"\t" +
-                            rs.getInt("quantity"));
+                            rs.getInt("quantity") + "\t" +rs.getString("adding_product_date"));
 
                     /*This is how we can add data and use it in the system*/
-                    Product p = new Product(rs.getString("product_name"),
-                            rs.getDouble("sold_price"),rs.getDouble("buy_price"),
-                            rs.getInt("quantity"));
-                    
-                    //MainClass.data.add(p);
+                    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                    Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")));
                     databaseOperations.data.add(p);
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
     }
     public static void deleteData(String productName){
@@ -122,31 +127,42 @@ public class DatabaseHelper {
         }
     }
 
-    public static int getNumberOfRows(){
+    public static void updateProductQuantity (Product product , int index , int newQuantity){
+        String sql = "UPDATE products SET quantity = ? WHERE product_name = ?";
 
-        String sql = "SELECT product_name,sold_price,buy_price,quantity FROM products";
-        try{
-
-            int counter = 0;
+        try  {
             Connection conn;
-            // db parameters
-            String url = "jdbc:sqlite:"+ name;  //
+            String url = "jdbc:sqlite:"+ name;
             conn = DriverManager.getConnection(url);
-            Statement stmt  = conn.createStatement();
-            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
-            // loop through the result set
-            while (rs.next()) {
-                counter++;
-            }
-            return counter;
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            // set the corresponding param
+            pstmt.setInt(1, newQuantity);
+            pstmt.setString(2, product.getName());
+            // update
+            pstmt.executeUpdate();
+            databaseOperations.data.get(index).setQuantity(newQuantity);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return 0;
     }
 
-    public static void updateData (Product product){
+    public static void insertSoldProductDetails(String productName , int quantity , String date, double price){
+        String sql = "INSERT INTO soldProducts(product_name,price,quantity,selling_date) VALUES(?,?,?,?)";
 
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, productName);
+            pstmt.setDouble(2, price);
+            pstmt.setInt(3, quantity);
+            pstmt.setString(4, date);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 }
