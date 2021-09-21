@@ -200,7 +200,7 @@ public class SellPage extends JPanel {
                         total = Integer.parseInt(howManyStr) *
                                 databaseOperations.data.get(productNumber).getSoldPrice();
                         totalValueLbl.setText(String.valueOf(total));
-                        pop = new ConfirmPopUp(String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
+                        pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
                     }
                     else{
                         soldLbl.setBounds(220, 370, 160, 20);

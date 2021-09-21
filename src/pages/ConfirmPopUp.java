@@ -6,9 +6,9 @@ public class ConfirmPopUp {
 
     private int result;
     public ConfirmPopUp (){ }
-    public ConfirmPopUp(String price,String productName , String quantity){
+    public ConfirmPopUp(JFrame parent,String price,String productName , String quantity){
         JDialog.setDefaultLookAndFeelDecorated(true);
-        this.result = JOptionPane.showConfirmDialog(null, "Are You Sure That You Want To Sell " + quantity + " Products From "+ productName+" For " + price +" L.E ?", "Confirm",
+        this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure That You Want To Sell " + quantity + " Products From "+ productName+" For " + price +" L.E ?", "Confirm",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.NO_OPTION) {
             System.out.println("No button clicked");
@@ -19,9 +19,9 @@ public class ConfirmPopUp {
         }
     }
 
-    public ConfirmPopUp(String productName){
+    public ConfirmPopUp(JFrame parent,String productName){
         JDialog.setDefaultLookAndFeelDecorated(true);
-        this.result = JOptionPane.showConfirmDialog(null, "Are You Sure You Want to add this product " + productName +" ?", "Confirm",
+        this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to add this product " + productName +" ?", "Confirm",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.NO_OPTION) {
             System.out.println("No button clicked");

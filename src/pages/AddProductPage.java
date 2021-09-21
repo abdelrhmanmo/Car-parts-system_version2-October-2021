@@ -115,7 +115,7 @@ public class AddProductPage extends JPanel{
                         msg.setText("You Enter Product Quantity :  0");
                     }
                     else {
-                        ConfirmPopUp pop = new ConfirmPopUp(productName.getText());
+                        ConfirmPopUp pop = new ConfirmPopUp(frame,productName.getText());
                         if (pop.getResult() == 0) {
                             msg.setBounds(210, 370, 200, 20);
                             msg.setText(insertProcess());
@@ -195,7 +195,7 @@ public class AddProductPage extends JPanel{
                                 msg.setText("You Enter Product Quantity :  0");
                             }
                             else {
-                                ConfirmPopUp pop = new ConfirmPopUp(productName.getText());
+                                ConfirmPopUp pop = new ConfirmPopUp(frame,productName.getText());
                                 if (pop.getResult() == 0) {
                                     msg.setBounds(210, 370, 200, 20);
                                     msg.setText(insertProcess());
