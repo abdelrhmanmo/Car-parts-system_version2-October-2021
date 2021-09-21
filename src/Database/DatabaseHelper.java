@@ -49,7 +49,7 @@ public class DatabaseHelper {
         try {
             Connection conn;
             // db parameters
-            String url = "jdbc:sqlite:"+ name;  // the database file is in the same path of this class
+            String url = "jdbc:sqlite:"+ name;
             // create a connection to the database
             conn = DriverManager.getConnection(url);
             Statement stmt = conn.createStatement();
@@ -89,7 +89,7 @@ public class DatabaseHelper {
             try{
                 Connection conn;
                 // db parameters
-                String url = "jdbc:sqlite:"+ name;  //
+                String url = "jdbc:sqlite:"+ name;
                 conn = DriverManager.getConnection(url);
                 Statement stmt  = conn.createStatement();
                 ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
@@ -160,6 +160,33 @@ public class DatabaseHelper {
             pstmt.setInt(3, quantity);
             pstmt.setString(4, date);
             pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void searchForProductsInStoke(String value){
+        databaseOperations.searchProducts.clear();
+        databaseOperations.searchProducts.add(" ");
+        String sql = "SELECT\n" +
+                "\tproduct_name\n" +
+                "FROM\n" +
+                "\tproducts\n" +
+                "WHERE\n" +
+                "\tproduct_name LIKE '%"+value+"%'";
+        System.out.println(sql);
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+                /*This is how we can add data and use it in the system*/
+                databaseOperations.searchProducts.add(rs.getString("product_name"));
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

@@ -7,7 +7,11 @@ import java.util.Date;
 
 public class databaseOperations {
     /*The array list that will get data from database (please check getAllData function in DatabaseHelper Class)*/
-    public static ArrayList<Product> data = new ArrayList<>();
+
+    public static ArrayList<Product> data = new ArrayList<Product>();
+
+    public static ArrayList<String>searchProducts = new ArrayList<String>();
+
     public databaseOperations(){
 
         //try to run after deleting system.db

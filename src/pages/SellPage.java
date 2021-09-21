@@ -65,7 +65,23 @@ public class SellPage extends JPanel {
                 soldLbl.setBounds(235,370,200,20);
                 soldLbl.setText("Enter Product Name !");
             }else {
-                aboutProcess();
+                DatabaseHelper.searchForProductsInStoke(searchField.getText());
+                ConfirmPopUp pop = new ConfirmPopUp(frame);
+                if (pop.getProductName().equals("null")){
+                    searchField.setText("");
+                    soldLbl.setBounds(235,370,200,20);
+                    soldLbl.setText("Enter Product Name !");
+                }
+                else if(pop.getProductName().equals(" ")){
+                    searchField.setText(pop.getProductName());
+                    soldLbl.setBounds(235,370,200,20);
+                    soldLbl.setText("Enter Product Name !");
+                }
+                else{
+                    searchField.setText(pop.getProductName());
+                    soldLbl.setText("");
+                    aboutProcess();
+                }
             }
         });
 
@@ -166,6 +182,8 @@ public class SellPage extends JPanel {
                 jTextFieldKeyTyped(e);
                 if (e.getKeyChar() == KeyEvent.VK_ENTER ) {
                     if(!(searchField.getText().isEmpty() || howManyValueTextField.getText().isEmpty())) {
+
+
                         sellingProcess();
                     }else{
                         soldLbl.setBounds(255,370,200,20);
@@ -179,7 +197,23 @@ public class SellPage extends JPanel {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() == KeyEvent.VK_ENTER && !searchField.getText().isEmpty()) {
-                    aboutProcess();
+                    DatabaseHelper.searchForProductsInStoke(searchField.getText());
+                    ConfirmPopUp pop = new ConfirmPopUp(frame);
+                    if (pop.getProductName().equals("null")){
+                        searchField.setText("");
+                        soldLbl.setBounds(235,370,200,20);
+                        soldLbl.setText("Enter Product Name !");
+                    }
+                    else if(pop.getProductName().equals(" ")){
+                        searchField.setText(pop.getProductName());
+                        soldLbl.setBounds(235,370,200,20);
+                        soldLbl.setText("Enter Product Name !");
+                    }
+                    else{
+                        searchField.setText(pop.getProductName());
+                        soldLbl.setText("");
+                        aboutProcess();
+                    }
                 }
             }
         });
