@@ -215,7 +215,7 @@ public class SellPage extends JPanel {
                         DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber , (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr))); /*بنعدل الداتا بتاعت المنج*/
                         DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total); /*بندخلها ل table المبيعات*/
                         quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-                        howManyLbl.setText("");
+                        howManyValueTextField.setText("");
                         totalValueLbl.setText("");
                     }
                     else{
