@@ -28,6 +28,17 @@ public class databaseOperations {
         DatabaseHelper.insertData(new Product("Test8",1000.0,1200.0,30,new Date()));
         DatabaseHelper.insertData(new Product("Test9",1000.0,1200.0,30,new Date()));
         DatabaseHelper.insertData(new Product("Test10",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("1تيست",1000.0,1200.0,50,new Date()));
+        DatabaseHelper.insertData(new Product("Test11",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test21",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test31",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test41",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test51",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test61",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test71",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test81",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test91",1000.0,1200.0,30,new Date()));
+        DatabaseHelper.insertData(new Product("Test110",1000.0,1200.0,30,new Date()));
 
         DatabaseHelper.deleteData("Test10");
         DatabaseHelper.getAllData();
