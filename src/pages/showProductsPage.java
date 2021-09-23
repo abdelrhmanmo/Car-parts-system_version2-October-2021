@@ -9,90 +9,148 @@ import java.awt.event.ActionEvent;
 
 public class showProductsPage extends JPanel{
 
-    int numOfPages = 0;
+    int numberOfPages = 0;
+    int currentPageNumber = 1;
+    int numOfRows = 0, length = 0;
+
     JFrame frame = new JFrame();
     Font labelFont = new Font("Arial",Font.PLAIN,15);
     Font headFont = new Font("Arial",Font.BOLD,12);
-
-    int numOfRows;
 
     JTextField[][] productsArr = new JTextField[databaseOperations.data.toArray().length][5];
     JTextField[] headsTF = new JTextField[5];
     JButton backBtn = new JButton("Back");
     JButton nextBtn = new JButton("->");
     JButton previousBtn = new JButton("<-");
-    JLabel numberOfPagesLbl = new JLabel("1/55");
+    JTextField pageNumberTF = new JTextField();
 
 
     public showProductsPage(){
+        length = databaseOperations.data.toArray().length;
 
-        if(databaseOperations.data.toArray().length < 10){
-            numOfRows = databaseOperations.data.toArray().length;
-        }else{
-            numOfRows = 10;
+        numberOfPages = length / 10;
+        if(length%10 != 0){
+            numberOfPages++;
         }
 
-        for(int i = 0*10; i < numOfRows; i++){
-            for(int j = 0; j < 5;j++) {
-                productsArr[i][j] = new JTextField("");
-            }
-        }
-        for(int i = 0; i < 5;i++){
-            headsTF[i] = new JTextField("");
-        }
-        dataTable(numOfPages);
+
+        dataTableDesign();
+        dataTable(1);   //initial page
+
         Design();
         buttonsAction();
         frameSettings();
     }
 
-    private void dataTable(int numOfPage){
+    private void dataTableDesign(){
 
-        for(int i = numOfPage; i < numOfRows;i++){
+        for(int i = 0; i < 10;i++){
+            for(int j = 0; j < 5;j++) {
+                productsArr[i][j] = new JTextField("");
+                switch (j) {
+                    case 0:
+                        productsArr[i][j].setBounds(0, 51 * (i + 1), 149, 48);
+                        productsArr[i][j].setHorizontalAlignment(0);
+                        productsArr[i][j].setEditable(false);
+                        //Fonts
+                        productsArr[i][j].setFont(labelFont);
+                        break;
 
-            int j = 0;
-            productsArr[i][j].setText(databaseOperations.data.get(i).getName());
-            productsArr[i][j].setBounds(0, 51 * (i + 1), 149, 48);
-            productsArr[i][j].setHorizontalAlignment(0);
-            productsArr[i][j].setEditable(false);
-            //Fonts
-            productsArr[i][j].setFont(labelFont);
+                    case 1:
+                        productsArr[i][j].setBounds(150, 51 * (i + 1), 92, 48);
+                        productsArr[i][j].setHorizontalAlignment(0);
+                        productsArr[i][j].setEditable(false);
+                        //Fonts
+                        productsArr[i][j].setFont(labelFont);
+                        break;
 
-            j = 1;
-            productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(i).getBuyPrice()));
-            productsArr[i][j].setBounds(150, 51 * (i + 1), 92, 48);
-            productsArr[i][j].setHorizontalAlignment(0);
-            productsArr[i][j].setEditable(false);
-            //Fonts
-            productsArr[i][j].setFont(labelFont);
+                    case 2:
+                        productsArr[i][j].setBounds(240, 51 * (i + 1), 92, 48);
+                        productsArr[i][j].setHorizontalAlignment(0);
+                        productsArr[i][j].setEditable(false);
+                        //Fonts
+                        productsArr[i][j].setFont(labelFont);
+                        break;
 
-            j = 2;
-            productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(i).getSoldPrice()));
-            productsArr[i][j].setBounds(240, 51 * (i + 1), 92, 48);
-            productsArr[i][j].setHorizontalAlignment(0);
-            productsArr[i][j].setEditable(false);
-            //Fonts
-            productsArr[i][j].setFont(labelFont);
+                    case 3:
+                        productsArr[i][j].setBounds(330, 51 * (i + 1), 92, 48);
+                        productsArr[i][j].setHorizontalAlignment(0);
+                        productsArr[i][j].setEditable(false);
+                        //Fonts
+                        productsArr[i][j].setFont(labelFont);
+                        break;
 
-            j = 3;
-            productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(i).getQuantity()));
-            productsArr[i][j].setBounds(330, 51 * (i + 1), 92, 48);
-            productsArr[i][j].setHorizontalAlignment(0);
-            productsArr[i][j].setEditable(false);
-            //Fonts
-            productsArr[i][j].setFont(labelFont);
+                    case 4:
+                        productsArr[i][j].setBounds(420, 51 * (i + 1), 165, 48);
+                        productsArr[i][j].setHorizontalAlignment(0);
+                        productsArr[i][j].setEditable(false);
+                        //Fonts
+                        productsArr[i][j].setFont(labelFont);
+                        break;
+                }
 
-            j = 4;
-            productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(i).getAddingToSystemDate()));
-            productsArr[i][j].setBounds(420, 51 * (i + 1), 165, 48);
-            productsArr[i][j].setHorizontalAlignment(0);
-            productsArr[i][j].setEditable(false);
-            //Fonts
-            productsArr[i][j].setFont(labelFont);
+            }
 
         }
 
 
+    }
+
+    private void dataTable(int currentPageNumber){
+
+        //currentPageNumber--;
+        int productNumber = (currentPageNumber -1) *10 - 1;
+
+        if(length >= currentPageNumber*10){
+            numOfRows = 10;
+        }else{
+            numOfRows = length - (currentPageNumber - 1) * 10;
+        }
+        System.out.println(numOfRows);
+
+        for(int i = 0; i < numOfRows;i++){
+            productNumber++;
+            for(int j = 0; j < 5;j++) {
+
+                switch (j) {
+                    case 0:
+                        productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName());
+                        break;
+
+                    case 1:
+                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
+                        break;
+
+
+                    case 2:
+                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
+                        break;
+
+                    case 3:
+                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+                        break;
+
+                    case 4:
+                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getAddingToSystemDate()));
+                        break;
+                }
+            }
+
+        }
+        if(numOfRows < 10){
+            deleteOverData(numOfRows);
+        }
+
+
+    }
+
+    private void deleteOverData(int numOfRows){      //when its less than 10 rows
+        for(int i = numOfRows; i < 10;i++){
+            for(int j = 0; j < 5;j++) {
+                productsArr[i][j].setText("");
+            }
+
+        }
     }
 
     private void Design(){
@@ -100,7 +158,10 @@ public class showProductsPage extends JPanel{
         backBtn.setBounds(30,572,80,20);
         nextBtn.setBounds(300,572,50,20);
         previousBtn.setBounds(200,572,50,20);
-        numberOfPagesLbl.setBounds(260,572,50,20);
+        pageNumberTF.setBounds(255,572,40,20);
+        pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
+        pageNumberTF.setEditable(false);
+        pageNumberTF.setHorizontalAlignment(0);
 
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
@@ -108,30 +169,29 @@ public class showProductsPage extends JPanel{
         //backBtn.setForeground(Color.BLUE);
 
         for(int i = 0; i < 5; i++) {
-            headsTF[i].setBackground(Color.gray);
             switch (i) {
                 case 0 -> {
-                    headsTF[i].setText("Name");
+                    headsTF[i] = new JTextField("Name");
                     headsTF[i].setBounds(0, 0, 151, 50);
                 }
                 case 1 -> {
-                    headsTF[i].setText("Original Price");
+                    headsTF[i] = new JTextField("Original Price");
                     headsTF[i].setBounds(150, 0, 92, 50);
                 }
                 case 2 -> {
-                    headsTF[i].setText("Selling Price");
+                    headsTF[i] = new JTextField("Selling Price");
                     headsTF[i].setBounds(240, 0, 92, 50);
                 }
                 case 3 -> {
-                    headsTF[i].setText("Quantity");
+                    headsTF[i] = new JTextField("Quantity");
                     headsTF[i].setBounds(330, 0, 92, 50);
                 }
                 case 4 -> {
-                    headsTF[i].setText("Date");
+                    headsTF[i] = new JTextField("Date");
                     headsTF[i].setBounds(420, 0, 165, 50);
                 }
             }
-
+            headsTF[i].setBackground(Color.gray);
             headsTF[i].setHorizontalAlignment(0);
             headsTF[i].setEditable(false);
             //Fonts
@@ -152,26 +212,43 @@ public class showProductsPage extends JPanel{
             frame.dispose();
         });
         nextBtn.addActionListener((ActionEvent ae)->{
-            System.out.println("Next");
-            numOfPages++;
-            dataTable(numOfPages);
+            nextPageOfData();
         });
         previousBtn.addActionListener((ActionEvent ae)->{
-            System.out.println("Previous");
+            previousPageOfData();
         });
+    }
+
+    private void nextPageOfData(){
+
+        if(currentPageNumber < numberOfPages){
+            currentPageNumber++;
+            pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
+        }
+
+        dataTable(currentPageNumber);
+
+    }
+
+    private void previousPageOfData(){
+        if(currentPageNumber > 1){
+            currentPageNumber--;
+            pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
+        }
+        dataTable(currentPageNumber);
+
     }
 
     private void frameSettings(){
 
-        //frame.add(dataTableLbl);
         frame.add(backBtn);
         frame.add(nextBtn);
         frame.add(previousBtn);
-        frame.add(numberOfPagesLbl);
+        frame.add(pageNumberTF);
         for(int i = 0; i < 5;i++){
             frame.add(headsTF[i]);
         }
-        for(int i = 0; i < numOfRows;i++){
+        for(int i = 0; i < 10;i++){
             for(int j = 0; j < 5;j++) {
                 frame.add(productsArr[i][j]);
             }
