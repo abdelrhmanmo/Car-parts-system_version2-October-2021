@@ -34,7 +34,8 @@ public class Menu extends JPanel {
             System.out.println("SHOW Button !!");
         });
         updateBtn.addActionListener((ActionEvent ae) ->{
-            System.out.println("Update Button !!");
+            new UpdateProductPage();
+            frame.dispose();
         });
         reportsBtn.addActionListener((ActionEvent ae) ->{
             System.out.println("Report Button !!");

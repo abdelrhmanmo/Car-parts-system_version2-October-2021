@@ -89,4 +89,17 @@ public class Product {
     public String getCategory() {
         return category;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", soldPrice=" + soldPrice +
+                ", buyPrice=" + buyPrice +
+                ", quantity=" + quantity +
+                ", category='" + category + '\'' +
+                ", addingToSystemDate='" + addingToSystemDate + '\'' +
+                ", sellingDate='" + sellingDate + '\'' +
+                '}';
+    }
 }

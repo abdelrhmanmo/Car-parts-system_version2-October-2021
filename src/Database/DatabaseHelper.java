@@ -151,6 +151,31 @@ public class DatabaseHelper {
         }
     }
 
+    public static void updateProductValues(Product product){
+        String sql = "UPDATE products SET sold_price = ?,buy_price = ? , quantity = ? , category = ? WHERE product_name = ?";
+
+
+        System.out.println(product.toString());
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            // set the corresponding param
+            pstmt.setDouble(1, product.getSoldPrice());
+            pstmt.setDouble(2, product.getBuyPrice());
+            pstmt.setInt(3, product.getQuantity());
+            pstmt.setString(4, product.getCategory());
+            pstmt.setString(5, product.getName());
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        getAllData();
+        getAllCategories();
+    }
+
     public static void updateProductQuantity (Product product , int index , int newQuantity){
         String sql = "UPDATE products SET quantity = ? WHERE product_name = ?";
 
