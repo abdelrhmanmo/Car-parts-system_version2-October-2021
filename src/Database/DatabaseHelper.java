@@ -44,8 +44,10 @@ public class DatabaseHelper {
     }
 
     private static void createTables(){
-        String table1 = "CREATE TABLE products (product_name TEXT PRIMARY KEY, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL)";
-        String table2 = "CREATE TABLE soldProducts (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL)";
+
+        String table3 = "CREATE TABLE categories (category TEXT PRIMARY KEY)";
+        String table1 = "CREATE TABLE products (product_name TEXT PRIMARY KEY, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL, category REFERENCES categories(category))";
+        String table2 = "CREATE TABLE soldProducts (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL, category TEXT NOT NULL)";
         try {
             Connection conn;
             // db parameters
@@ -54,6 +56,7 @@ public class DatabaseHelper {
             conn = DriverManager.getConnection(url);
             Statement stmt = conn.createStatement();
 
+            stmt.execute(table3);
             stmt.execute(table1);
             stmt.execute(table2);
         } catch (SQLException e) {
@@ -62,7 +65,7 @@ public class DatabaseHelper {
     }
 
     public static String insertData(Product product){
-        String sql = "INSERT INTO products(product_name,sold_price,buy_price,quantity,adding_product_date) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO products(product_name,sold_price,buy_price,quantity,adding_product_date,category) VALUES(?,?,?,?,?,?)";
 
         try  {
             Connection conn;
@@ -75,6 +78,7 @@ public class DatabaseHelper {
             pstmt.setDouble(3, product.getBuyPrice());
             pstmt.setDouble(4, product.getQuantity());
             pstmt.setString(5, product.getAddingToSystemDate());
+            pstmt.setString(6, product.getCategory());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -84,7 +88,7 @@ public class DatabaseHelper {
         return "Inserted Successfully!";
     }
     public static void getAllData(){
-            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date FROM products";
+            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products";
             databaseOperations.data.clear();
             try{
                 Connection conn;
@@ -97,11 +101,11 @@ public class DatabaseHelper {
                 while (rs.next()) {
                     System.out.println(rs.getString("product_name") +  "\t" +
                             rs.getDouble("sold_price") + "\t" +rs.getDouble("buy_price")+"\t" +
-                            rs.getInt("quantity") + "\t" +rs.getString("adding_product_date"));
+                            rs.getInt("quantity") + "\t" +rs.getString("adding_product_date") + "\t"+rs.getString("category"));
 
                     /*This is how we can add data and use it in the system*/
                     DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                    Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")));
+                    Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"));
                     databaseOperations.data.add(p);
                 }
             } catch (SQLException e) {
@@ -125,6 +129,26 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        getAllData();
+    }
+
+    public static void getAllCategories(){
+        String sql = "SELECT * FROM categories";
+        databaseOperations.allCategories.clear();
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+              databaseOperations.allCategories.add(rs.getString("category"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void updateProductQuantity (Product product , int index , int newQuantity){
@@ -144,6 +168,22 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static void insertNewCategory(String category){
+        String sql = "INSERT INTO categories(category) VALUES(?)";
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, category);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        getAllCategories();
     }
 
     public static void insertSoldProductDetails(String productName , int quantity , String date, double price){

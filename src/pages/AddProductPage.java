@@ -1,12 +1,14 @@
 package pages;
 
 import Database.DatabaseHelper;
+import Database.databaseOperations;
 import classes.Product;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
@@ -39,6 +41,16 @@ public class AddProductPage extends JPanel{
 
     JButton insertBtn = new JButton("Enter Product");
     JLabel msg = new JLabel();
+
+
+
+
+    JList list = new JList(databaseOperations.allCategories.toArray());
+    JScrollPane pane = new JScrollPane(list);
+
+    // create a button and add action listener
+    JButton btnGet = new JButton("Add Category");
+
 
     public AddProductPage(){
         typingRules();
@@ -73,6 +85,8 @@ public class AddProductPage extends JPanel{
         insertBtn.setBounds(175,330,220,35);
         msg.setBounds(190,370,160,20);
 
+        pane.setBounds(450,160,100,160);
+        btnGet.setBounds(420,120,160,20);
 
         //Fonts
         productNameLbl.setFont(labelFont);
@@ -135,6 +149,26 @@ public class AddProductPage extends JPanel{
             new Menu();
             frame.dispose();
         });
+
+        btnGet.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               InputPopUp popUp= new InputPopUp(frame);
+               if(!popUp.getResult().isEmpty()){
+                   if(databaseOperations.searchForCategory(popUp.getResult()).equals("")){
+                       DatabaseHelper.insertNewCategory(popUp.getResult());
+                       list = new JList(databaseOperations.allCategories.toArray());
+                       pane.add(list);
+
+                       pane.repaint();
+                       frame.revalidate();
+                       frame.repaint();
+                   }
+                   else{
+                       msg.setText(databaseOperations.searchForCategory(popUp.getResult()));
+                   }
+               }
+            }// end actionPerformed
+        });
     }
 
     private void frameSettings(){
@@ -153,6 +187,8 @@ public class AddProductPage extends JPanel{
         frame.add(dateLblValue);
         frame.add(msg);
         frame.add(backBtn);
+        frame.add(pane);
+        frame.add(btnGet);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -221,15 +257,19 @@ public class AddProductPage extends JPanel{
     }
 
     private String insertProcess(){
-        return DatabaseHelper.insertData(
-                new Product(
-                      productName.getText(),
-                      Double.parseDouble(sellingPrice.getText()),
-                      Double.parseDouble(buyingPrice.getText()),
-                      Integer.parseInt(quantity.getText()),
-                      new Date()
-            )
-        );
+        if(list.getSelectedIndex()>=0) {
+            return DatabaseHelper.insertData(
+                    new Product(
+                            productName.getText(),
+                            Double.parseDouble(sellingPrice.getText()),
+                            Double.parseDouble(buyingPrice.getText()),
+                            Integer.parseInt(quantity.getText()),
+                            new Date(),
+                            (String) list.getModel().getElementAt(list.getSelectedIndex())
+                    )
+            );
+        }
+        return "Select A Category";
     }
 
 }

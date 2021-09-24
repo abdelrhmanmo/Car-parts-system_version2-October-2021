@@ -12,36 +12,18 @@ public class databaseOperations {
 
     public static ArrayList<String>searchProducts = new ArrayList<String>();
 
+    public static ArrayList<String> allCategories = new ArrayList<String>();
+
     public databaseOperations(){
 
         //try to run after deleting system.db
         DatabaseHelper.setName("system.db"); // db is extension for database file
         DatabaseHelper.createNewDatabase();
-        DatabaseHelper.insertData(new Product("تيست",1000.0,1200.0,50,new Date()));
+/*      DatabaseHelper.insertData(new Product("تيست",1000.0,1200.0,50,new Date()));
         DatabaseHelper.insertData(new Product("Test1",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test3",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test4",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test5",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test6",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test7",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test8",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test9",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test10",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("1تيست",1000.0,1200.0,50,new Date()));
-        DatabaseHelper.insertData(new Product("Test11",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test21",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test31",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test41",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test51",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test61",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test71",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test81",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test91",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test110",1000.0,1200.0,30,new Date()));
-
-        DatabaseHelper.deleteData("Test10");
+        DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30,new Date()));*/
         DatabaseHelper.getAllData();
+        DatabaseHelper.getAllCategories();
 
     }
     public static int search(String productName){
@@ -53,5 +35,14 @@ public class databaseOperations {
         }
 
         return -1; // عشان لو في product فعلا في اول index هيعملك مشكله هناك
+    }
+
+    public static String searchForCategory(String category) {
+        for (int i = 0; i < allCategories.toArray().length; i++) {
+            if (allCategories.get(i).equals(category)) {
+                return "This Category Already Exist";
+            }
+        }
+        return "";
     }
 }
