@@ -156,9 +156,7 @@ public class AddProductPage extends JPanel{
                if(!popUp.getResult().isEmpty()){
                    if(databaseOperations.searchForCategory(popUp.getResult()).equals("")){
                        DatabaseHelper.insertNewCategory(popUp.getResult());
-                       list = new JList(databaseOperations.allCategories.toArray());
-                       pane.add(list);
-
+                       list.setListData(databaseOperations.allCategories.toArray());
                        pane.repaint();
                        frame.revalidate();
                        frame.repaint();
