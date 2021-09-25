@@ -18,10 +18,11 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class DatabaseHelper {
 
-    private static String name; // name of database
+    public static String name; // name of database
     public static void setName(String name) {
         DatabaseHelper.name = name; // set the name
     }
@@ -257,7 +258,7 @@ public class DatabaseHelper {
         }
     }
 
-    public static void getProductsFromSpecificCategory(String category){
+    public static ArrayList<Product> getProductsFromSpecificCategory(String category){
         databaseOperations.listOfProductsOfASpecificCategory.clear();
         String sql = "SELECT\n" +
                 "\t*\n" +
@@ -282,6 +283,7 @@ public class DatabaseHelper {
         } catch (SQLException | ParseException e) {
             System.out.println(e.getMessage());
         }
+        return databaseOperations.listOfProductsOfASpecificCategory;
     }
 
 }
