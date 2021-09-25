@@ -1,28 +1,35 @@
 package pages;
 
 import Database.*;
+import classes.Product;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class showProductsPage extends JPanel{
 
-    int numberOfPages = 0;
+    int numberOfPages;
     int currentPageNumber = 1;
-    int numOfRows = 0, length = 0;
+    int numOfRows = 0, length;
 
     JFrame frame = new JFrame();
     Font labelFont = new Font("Arial",Font.PLAIN,15);
     Font headFont = new Font("Arial",Font.BOLD,12);
 
-    JTextField[][] productsArr = new JTextField[databaseOperations.data.toArray().length][5];
-    JTextField[] headsTF = new JTextField[5];
+    JTextField[][] productsArr = new JTextField[10][6];
+    JTextField[] headsTF = new JTextField[6];
     JButton backBtn = new JButton("Back");
     JButton nextBtn = new JButton("->");
     JButton previousBtn = new JButton("<-");
     JTextField pageNumberTF = new JTextField();
+    JComboBox<String> catList = new JComboBox<>();
+    JButton filterBtn = new JButton("Filter");
 
 
     public showProductsPage(){
@@ -45,60 +52,28 @@ public class showProductsPage extends JPanel{
     private void dataTableDesign(){
 
         for(int i = 0; i < 10;i++){
-            for(int j = 0; j < 5;j++) {
+            for(int j = 0; j < 6;j++) {
                 productsArr[i][j] = new JTextField("");
+                productsArr[i][j].setHorizontalAlignment(0);
+                productsArr[i][j].setEditable(false);
+                //Fonts
+                productsArr[i][j].setFont(labelFont);
                 switch (j) {
-                    case 0:
-                        productsArr[i][j].setBounds(0, 51 * (i + 1), 149, 48);
-                        productsArr[i][j].setHorizontalAlignment(0);
-                        productsArr[i][j].setEditable(false);
-                        //Fonts
-                        productsArr[i][j].setFont(labelFont);
-                        break;
-
-                    case 1:
-                        productsArr[i][j].setBounds(150, 51 * (i + 1), 92, 48);
-                        productsArr[i][j].setHorizontalAlignment(0);
-                        productsArr[i][j].setEditable(false);
-                        //Fonts
-                        productsArr[i][j].setFont(labelFont);
-                        break;
-
-                    case 2:
-                        productsArr[i][j].setBounds(240, 51 * (i + 1), 92, 48);
-                        productsArr[i][j].setHorizontalAlignment(0);
-                        productsArr[i][j].setEditable(false);
-                        //Fonts
-                        productsArr[i][j].setFont(labelFont);
-                        break;
-
-                    case 3:
-                        productsArr[i][j].setBounds(330, 51 * (i + 1), 92, 48);
-                        productsArr[i][j].setHorizontalAlignment(0);
-                        productsArr[i][j].setEditable(false);
-                        //Fonts
-                        productsArr[i][j].setFont(labelFont);
-                        break;
-
-                    case 4:
-                        productsArr[i][j].setBounds(420, 51 * (i + 1), 165, 48);
-                        productsArr[i][j].setHorizontalAlignment(0);
-                        productsArr[i][j].setEditable(false);
-                        //Fonts
-                        productsArr[i][j].setFont(labelFont);
-                        break;
+                    case 0 -> productsArr[i][j].setBounds(0, 51 * (i + 1), 149, 48);
+                    case 1 -> productsArr[i][j].setBounds(150, 51 * (i + 1), 92, 48);
+                    case 2 -> productsArr[i][j].setBounds(240, 51 * (i + 1), 92, 48);
+                    case 3 -> productsArr[i][j].setBounds(330, 51 * (i + 1), 92, 48);
+                    case 4 -> productsArr[i][j].setBounds(420, 51 * (i + 1), 165, 48);
+                    case 5 -> productsArr[i][j].setBounds(585, 51 * (i + 1), 160, 48);
                 }
 
             }
 
         }
-
-
     }
 
     private void dataTable(int currentPageNumber){
 
-        //currentPageNumber--;
         int productNumber = (currentPageNumber -1) *10 - 1;
 
         if(length >= currentPageNumber*10){
@@ -106,47 +81,28 @@ public class showProductsPage extends JPanel{
         }else{
             numOfRows = length - (currentPageNumber - 1) * 10;
         }
-        System.out.println(numOfRows);
 
+        deleteData();
         for(int i = 0; i < numOfRows;i++){
             productNumber++;
-            for(int j = 0; j < 5;j++) {
+            for(int j = 0; j < 6;j++) {
 
                 switch (j) {
-                    case 0:
-                        productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName());
-                        break;
-
-                    case 1:
-                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
-                        break;
-
-
-                    case 2:
-                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
-                        break;
-
-                    case 3:
-                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-                        break;
-
-                    case 4:
-                        productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getAddingToSystemDate()));
-                        break;
+                    case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName());
+                    case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
+                    case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
+                    case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+                    case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getAddingToSystemDate()));
+                    case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getCategory()));
                 }
             }
 
         }
-        if(numOfRows < 10){
-            deleteOverData(numOfRows);
-        }
-
-
     }
 
-    private void deleteOverData(int numOfRows){      //when its less than 10 rows
-        for(int i = numOfRows; i < 10;i++){
-            for(int j = 0; j < 5;j++) {
+    private void deleteData(){      //when its less than 10 rows
+        for(int i = 0; i < 10;i++){
+            for(int j = 0; j < 6;j++) {
                 productsArr[i][j].setText("");
             }
 
@@ -156,19 +112,22 @@ public class showProductsPage extends JPanel{
     private void Design(){
 
         backBtn.setBounds(30,572,80,20);
-        nextBtn.setBounds(300,572,50,20);
-        previousBtn.setBounds(200,572,50,20);
-        pageNumberTF.setBounds(255,572,40,20);
+        nextBtn.setBounds(355,572,50,20);
+        previousBtn.setBounds(255,572,50,20);
+        pageNumberTF.setBounds(310,572,40,20);
         pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
         pageNumberTF.setEditable(false);
         pageNumberTF.setHorizontalAlignment(0);
+
+        catList.setBounds(470,572,150,20);
+        filterBtn.setBounds(640,572,70,20);
 
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
         previousBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
         //backBtn.setForeground(Color.BLUE);
 
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < 6; i++) {
             switch (i) {
                 case 0 -> {
                     headsTF[i] = new JTextField("Name");
@@ -190,6 +149,10 @@ public class showProductsPage extends JPanel{
                     headsTF[i] = new JTextField("Date");
                     headsTF[i].setBounds(420, 0, 165, 50);
                 }
+                case 5 -> {
+                    headsTF[i] = new JTextField("Category");
+                    headsTF[i].setBounds(585, 0, 160, 50);
+                }
             }
             headsTF[i].setBackground(Color.gray);
             headsTF[i].setHorizontalAlignment(0);
@@ -202,6 +165,9 @@ public class showProductsPage extends JPanel{
             }
         }
 
+        //Puts all cats name in ComboBox
+        catListData();
+
         //Fonts
 
     }
@@ -211,12 +177,31 @@ public class showProductsPage extends JPanel{
             new Menu();
             frame.dispose();
         });
-        nextBtn.addActionListener((ActionEvent ae)->{
-            nextPageOfData();
-        });
-        previousBtn.addActionListener((ActionEvent ae)->{
-            previousPageOfData();
-        });
+        nextBtn.addActionListener((ActionEvent ae)-> nextPageOfData());
+        previousBtn.addActionListener((ActionEvent ae)-> previousPageOfData());
+
+        filterBtn.addActionListener((ActionEvent ae)-> dataFiltration(Objects.requireNonNull(catList.getSelectedItem()).toString()));
+    }
+
+    private void dataFiltration(String catName){
+        //int i = 0;
+        deleteData();
+
+        ArrayList<Product> productsArray;
+        productsArray = DatabaseHelper.getProductsFromSpecificCategory(catName);
+        for(int i = 0; i < productsArray.toArray().length; i++){
+            for(int j = 0; j < 6; j++){
+                switch (j) {
+                    case 0 -> productsArr[i][j].setText(productsArray.get(i).getName());
+                    case 1 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getBuyPrice()));
+                    case 2 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getSoldPrice()));
+                    case 3 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getQuantity()));
+                    case 4 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getAddingToSystemDate()));
+                    case 5 -> productsArr[i][j].setText(productsArray.get(i).getCategory());
+                }
+            }
+        }
+
     }
 
     private void nextPageOfData(){
@@ -239,25 +224,45 @@ public class showProductsPage extends JPanel{
 
     }
 
+    private void catListData(){
+        String sql = "SELECT * FROM categories";
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ DatabaseHelper.name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);
+            // loop through the result set
+            while (rs.next()) {
+                catList.addItem(rs.getString("category"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void frameSettings(){
 
         frame.add(backBtn);
         frame.add(nextBtn);
         frame.add(previousBtn);
         frame.add(pageNumberTF);
-        for(int i = 0; i < 5;i++){
+        for(int i = 0; i < 6;i++){
             frame.add(headsTF[i]);
         }
         for(int i = 0; i < 10;i++){
-            for(int j = 0; j < 5;j++) {
+            for(int j = 0; j < 6;j++) {
                 frame.add(productsArr[i][j]);
             }
         }
+        frame.add(catList);
+        frame.add(filterBtn);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Products Page");
-        frame.setSize(600,650);
+        frame.setSize(760,650);
         frame.setLocation(400,60);
         frame.setVisible(true);
         frame.setResizable(false);
