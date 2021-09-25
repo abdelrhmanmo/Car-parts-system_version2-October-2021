@@ -222,6 +222,7 @@ public class UpdateProductPage extends JPanel {
                         pane.repaint();
                         frame.revalidate();
                         frame.repaint();
+                        msg.setText("");
                     }
                     else{
                         msg.setText(databaseOperations.searchForCategory(popUp.getResult()));
