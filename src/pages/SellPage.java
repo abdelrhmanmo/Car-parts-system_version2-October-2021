@@ -239,7 +239,7 @@ public class SellPage extends JPanel {
     private void sellingProcess(){
         String searchWord = searchField.getText();
         int productNumber = databaseOperations.search(searchWord,(String)list.getModel().getElementAt(list.getSelectedIndex()));
-        ConfirmPopUp pop = new ConfirmPopUp();//// بص على ال class ده ولو مفهمتش حاجه قولي
+        ConfirmPopUp pop = new ConfirmPopUp();
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String date;
@@ -267,6 +267,7 @@ public class SellPage extends JPanel {
                         quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
                         howManyValueTextField.setText("");
                         totalValueLbl.setText("");
+                        searchField.setText("");
                     }
                     else{
                         soldLbl.setText("");
