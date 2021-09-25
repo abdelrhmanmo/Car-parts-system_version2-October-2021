@@ -38,8 +38,8 @@ public class ConfirmPopUp {
 
     public ConfirmPopUp(JFrame frame) {
 
-        productName = " ";
-        if (databaseOperations.searchProducts.toArray().length == 1) {
+        productName = "";
+        if (databaseOperations.searchProducts.toArray().length == 0) {
             JOptionPane.showMessageDialog(frame, "Sorry not found product match your search option , please try again");
         } else {
                 productName = String.valueOf(JOptionPane.showInputDialog(frame, "Select The Product That You Search For", "Results", JOptionPane.QUESTION_MESSAGE,

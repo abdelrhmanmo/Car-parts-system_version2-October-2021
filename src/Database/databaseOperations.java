@@ -14,6 +14,8 @@ public class databaseOperations {
 
     public static ArrayList<String> allCategories = new ArrayList<String>();
 
+    public static ArrayList<Product> listOfProductsOfASpecificCategory = new ArrayList<>();
+
     public databaseOperations(){
 
         //try to run after deleting system.db
@@ -26,10 +28,10 @@ public class databaseOperations {
         DatabaseHelper.getAllCategories();
 
     }
-    public static int search(String productName){
+    public static int search(String productName , String category){
 
         for (int i = 0; i < data.toArray().length; i++){
-            if(data.get(i).getName().equals(productName)){
+            if(data.get(i).getName().equals(productName) && data.get(i).getCategory().equals(category)){
                 return i;
             }
         }
@@ -44,5 +46,9 @@ public class databaseOperations {
             }
         }
         return "";
+    }
+
+    public static int numberOfProductsFromASpecificCategories(){
+        return listOfProductsOfASpecificCategory.toArray().length;
     }
 }

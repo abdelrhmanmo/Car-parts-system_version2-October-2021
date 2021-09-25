@@ -233,22 +233,26 @@ public class UpdateProductPage extends JPanel {
         searchBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatabaseHelper.searchForProductsInStoke(searchField.getText());
-                ConfirmPopUp pop = new ConfirmPopUp(frame);
-                if (pop.getProductName().equals("null")){
-                    searchField.setText("");
-                    msg.setBounds(235,370,200,20);
-                    msg.setText("Enter Product Name !");
-                }
-                else if(pop.getProductName().equals(" ")){
-                    searchField.setText("");
-                    msg.setBounds(235,370,200,20);
-                    msg.setText("Enter Product Name !");
+                if(list.getSelectedIndex() != -1) {
+                    DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String) list.getModel().getElementAt(list.getSelectedIndex()));
+                    ConfirmPopUp pop = new ConfirmPopUp(frame);
+                    if (pop.getProductName().equals("null")) {
+                        searchField.setText("");
+                        msg.setBounds(235, 370, 200, 20);
+                        msg.setText("Enter Product Name !");
+                    } else if (pop.getProductName().equals(" ")) {
+                        searchField.setText("");
+                        msg.setBounds(235, 370, 200, 20);
+                        msg.setText("Enter Product Name !");
+                    } else {
+                        searchField.setText(pop.getProductName());
+                        msg.setText("");
+                        searchProcess();
+                    }
                 }
                 else{
-                    searchField.setText(pop.getProductName());
-                    msg.setText("");
-                    searchProcess();
+                    msg.setBounds(235, 370, 200, 20);
+                    msg.setText("Select A Category !");
                 }
             }
         });
@@ -307,23 +311,27 @@ public class UpdateProductPage extends JPanel {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() == KeyEvent.VK_ENTER && !searchField.getText().isEmpty()) {
-                    DatabaseHelper.searchForProductsInStoke(searchField.getText());
-                    ConfirmPopUp pop = new ConfirmPopUp(frame);
-                    if (pop.getProductName().equals("null")){
-                        searchField.setText("");
-                        msg.setBounds(235,370,200,20);
-                        msg.setText("Enter Product Name !");
+                    if (list.getSelectedIndex() != -1) {
+                        DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String)list.getModel().getElementAt(list.getSelectedIndex()));
+                        ConfirmPopUp pop = new ConfirmPopUp(frame);
+                        if (pop.getProductName().equals("null")) {
+                            searchField.setText("");
+                            msg.setBounds(235, 370, 200, 20);
+                            msg.setText("Enter Product Name !");
+                        } else if (pop.getProductName().equals(" ")) {
+                            searchField.setText("");
+                            msg.setBounds(235, 370, 200, 20);
+                            msg.setText("Enter Product Name !");
+                        } else {
+                            searchField.setText(pop.getProductName());
+                            msg.setText("");
+                            searchProcess();
+                        }
                     }
-                    else if(pop.getProductName().equals(" ")){
-                        searchField.setText("");
-                        msg.setBounds(235,370,200,20);
-                        msg.setText("Enter Product Name !");
-                    }
-                    else{
-                        searchField.setText(pop.getProductName());
-                        msg.setText("");
-                        searchProcess();
-                    }
+                }
+                else{
+                    msg.setBounds(235, 370, 200, 20);
+                    msg.setText("Select A Category!");
                 }
             }
         });
@@ -334,7 +342,7 @@ public class UpdateProductPage extends JPanel {
     private void searchProcess(){
 
         String searchWord = searchField.getText();
-        int productNumber = databaseOperations.search(searchWord);
+        int productNumber = databaseOperations.search(searchWord,(String)list.getModel().getElementAt(list.getSelectedIndex()));
         if(productNumber != -1){
             list.setSelectedIndex(getCategoryIndex(databaseOperations.data.get(productNumber)));
             productName.setText(String.valueOf(databaseOperations.data.get(productNumber).getName()));
@@ -350,7 +358,9 @@ public class UpdateProductPage extends JPanel {
     }
 
     private int getCategoryIndex(Product product){
+        System.out.println(product.getCategory());
         for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
+            System.out.println(databaseOperations.allCategories.get(i));
             if(product.getCategory().equals(databaseOperations.allCategories.get(i))){
                 return i;
             }

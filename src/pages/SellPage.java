@@ -40,6 +40,11 @@ public class SellPage extends JPanel {
     JButton submitBtn = new JButton("Submit");
     JLabel soldLbl = new JLabel();
 
+
+    JList list = new JList(databaseOperations.allCategories.toArray());
+    JScrollPane pane = new JScrollPane(list);
+
+
     public SellPage(){
         typingRules();
         Design();
@@ -64,8 +69,13 @@ public class SellPage extends JPanel {
 
                 soldLbl.setBounds(235,370,200,20);
                 soldLbl.setText("Enter Product Name !");
-            }else {
-                DatabaseHelper.searchForProductsInStoke(searchField.getText());
+            }else if(list.getSelectedIndex() == -1)
+            {
+                soldLbl.setBounds(235,370,200,20);
+                soldLbl.setText("Select A Category!");
+            }
+              else{
+                  DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String) list.getModel().getElementAt(list.getSelectedIndex()));
                 ConfirmPopUp pop = new ConfirmPopUp(frame);
                 if (pop.getProductName().equals("null")){
                     searchField.setText("");
@@ -118,6 +128,7 @@ public class SellPage extends JPanel {
         submitBtn.setBounds(260,330,80,20);
         soldLbl.setBounds(240,370,150,20);
 
+        pane.setBounds(450,50,100,160);
 
         //Fonts
         searchField.setFont(typingFont);
@@ -164,6 +175,7 @@ public class SellPage extends JPanel {
         frame.add(submitBtn);
         frame.add(soldLbl);
         frame.add(backBtn);
+        frame.add(pane);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -197,22 +209,26 @@ public class SellPage extends JPanel {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() == KeyEvent.VK_ENTER && !searchField.getText().isEmpty()) {
-                    DatabaseHelper.searchForProductsInStoke(searchField.getText());
-                    ConfirmPopUp pop = new ConfirmPopUp(frame);
-                    if (pop.getProductName().equals("null")){
-                        searchField.setText("");
-                        soldLbl.setBounds(235,370,200,20);
-                        soldLbl.setText("Enter Product Name !");
-                    }
-                    else if(pop.getProductName().equals(" ")){
-                        searchField.setText(pop.getProductName());
-                        soldLbl.setBounds(235,370,200,20);
-                        soldLbl.setText("Enter Product Name !");
+                    if(list.getSelectedIndex() != -1) {
+                        DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String) list.getModel().getElementAt(list.getSelectedIndex()));
+                        ConfirmPopUp pop = new ConfirmPopUp(frame);
+                        if (pop.getProductName().equals("null")) {
+                            searchField.setText("");
+                            soldLbl.setBounds(235, 370, 200, 20);
+                            soldLbl.setText("Enter Product Name !");
+                        } else if (pop.getProductName().equals(" ")) {
+                            searchField.setText(pop.getProductName());
+                            soldLbl.setBounds(235, 370, 200, 20);
+                            soldLbl.setText("Enter Product Name !");
+                        } else {
+                            searchField.setText(pop.getProductName());
+                            soldLbl.setText("");
+                            aboutProcess();
+                        }
                     }
                     else{
-                        searchField.setText(pop.getProductName());
-                        soldLbl.setText("");
-                        aboutProcess();
+                        soldLbl.setBounds(235, 370, 200, 20);
+                        soldLbl.setText("Select A Category!");
                     }
                 }
             }
@@ -222,7 +238,7 @@ public class SellPage extends JPanel {
 
     private void sellingProcess(){
         String searchWord = searchField.getText();
-        int productNumber = databaseOperations.search(searchWord);
+        int productNumber = databaseOperations.search(searchWord,(String)list.getModel().getElementAt(list.getSelectedIndex()));
         ConfirmPopUp pop = new ConfirmPopUp();//// بص على ال class ده ولو مفهمتش حاجه قولي
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -264,7 +280,7 @@ public class SellPage extends JPanel {
     private void aboutProcess(){
 
         String searchWord = searchField.getText();
-        int productNumber = databaseOperations.search(searchWord);
+        int productNumber = databaseOperations.search(searchWord,(String) list.getModel().getElementAt(list.getSelectedIndex()));
         if(productNumber != -1){
             originalPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
             sellingPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));

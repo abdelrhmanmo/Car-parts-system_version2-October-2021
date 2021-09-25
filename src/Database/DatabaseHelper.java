@@ -46,7 +46,7 @@ public class DatabaseHelper {
     private static void createTables(){
 
         String table3 = "CREATE TABLE categories (category TEXT PRIMARY KEY)";
-        String table1 = "CREATE TABLE products (product_name TEXT PRIMARY KEY, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL, category REFERENCES categories(category))";
+        String table1 = "CREATE TABLE products (product_name TEXT, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL, category REFERENCES categories(category), PRIMARY KEY(product_name,category))";
         String table2 = "CREATE TABLE soldProducts (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL, category TEXT NOT NULL)";
         try {
             Connection conn;
@@ -230,15 +230,14 @@ public class DatabaseHelper {
         }
     }
 
-    public static void searchForProductsInStoke(String value){
+    public static void searchForProductsInStoke(String value , String category){
         databaseOperations.searchProducts.clear();
-        databaseOperations.searchProducts.add(" ");
         String sql = "SELECT\n" +
                 "\tproduct_name\n" +
                 "FROM\n" +
                 "\tproducts\n" +
                 "WHERE\n" +
-                "\tproduct_name LIKE '%"+value+"%'";
+                "\t(product_name LIKE '%"+value+"%') AND (category LIKE '"+category+"')";
         System.out.println(sql);
         try{
             Connection conn;
@@ -249,10 +248,38 @@ public class DatabaseHelper {
             ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
             // loop through the result set
             while (rs.next()) {
+                System.out.println(rs.getString("product_name"));
                 /*This is how we can add data and use it in the system*/
                 databaseOperations.searchProducts.add(rs.getString("product_name"));
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void getProductsFromSpecificCategory(String category){
+        databaseOperations.listOfProductsOfASpecificCategory.clear();
+        String sql = "SELECT\n" +
+                "\t*\n" +
+                "FROM\n" +
+                "\tproducts\n" +
+                "WHERE\n" +
+                "\tcategory LIKE '" + category+"'";
+        System.out.println(sql);
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"));
+                databaseOperations.listOfProductsOfASpecificCategory.add(p);
+            }
+        } catch (SQLException | ParseException e) {
             System.out.println(e.getMessage());
         }
     }
