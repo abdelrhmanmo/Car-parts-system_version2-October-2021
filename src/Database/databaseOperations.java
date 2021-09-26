@@ -19,7 +19,7 @@ public class databaseOperations {
     public databaseOperations(){
 
         //try to run after deleting system.db
-        //DatabaseHelper.setName("system.db"); // db is extension for database file
+        DatabaseHelper.setName("system.db"); // db is extension for database file
         DatabaseHelper.createNewDatabase();
 /*      DatabaseHelper.insertData(new Product("تيست",1000.0,1200.0,50,new Date()));
         DatabaseHelper.insertData(new Product("Test1",1000.0,1200.0,30,new Date()));

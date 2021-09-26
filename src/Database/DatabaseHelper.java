@@ -152,8 +152,8 @@ public class DatabaseHelper {
         }
     }
 
-    public static void updateProductValues(Product product){
-        String sql = "UPDATE products SET sold_price = ?,buy_price = ? , quantity = ? , category = ? WHERE product_name = ?";
+    public static String updateProductValues(Product product , String oldName){
+        String sql = "UPDATE products SET product_name = ?,sold_price = ?,buy_price = ? , quantity = ? , category = ? WHERE product_name = ?";
 
 
         System.out.println(product.toString());
@@ -163,18 +163,21 @@ public class DatabaseHelper {
             conn = DriverManager.getConnection(url);
             PreparedStatement pstmt = conn.prepareStatement(sql);
             // set the corresponding param
-            pstmt.setDouble(1, product.getSoldPrice());
-            pstmt.setDouble(2, product.getBuyPrice());
-            pstmt.setInt(3, product.getQuantity());
-            pstmt.setString(4, product.getCategory());
-            pstmt.setString(5, product.getName());
+            pstmt.setString(1, product.getName());
+            pstmt.setDouble(2, product.getSoldPrice());
+            pstmt.setDouble(3, product.getBuyPrice());
+            pstmt.setInt(4, product.getQuantity());
+            pstmt.setString(5, product.getCategory());
+            pstmt.setString(6, oldName);
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            return "This Product Already Exist";
         }
         getAllData();
         getAllCategories();
+        return "Updated Successfully";
     }
 
     public static void updateProductQuantity (Product product , int index , int newQuantity){
@@ -284,6 +287,32 @@ public class DatabaseHelper {
             System.out.println(e.getMessage());
         }
         return databaseOperations.listOfProductsOfASpecificCategory;
+    }
+
+    public static void deleteCategory(String category){
+        String sql = "DELETE FROM categories WHERE category = ?";
+        String sql2 = "DELETE FROM products WHERE category = ?";
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, category);
+
+            pstmt.executeUpdate();
+
+
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+            pstmt2.setString(1, category);
+
+            pstmt2.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        getAllCategories();
+        getAllData();
     }
 
 }

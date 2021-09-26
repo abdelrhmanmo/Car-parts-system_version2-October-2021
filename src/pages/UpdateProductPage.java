@@ -16,6 +16,8 @@ import java.util.Date;
 public class UpdateProductPage extends JPanel {
     JFrame frame = new JFrame();
 
+    String oldProductName;
+
     Font typingFont = new Font("Arial",Font.PLAIN,14);
     Font labelFont = new Font("Arial",Font.BOLD,14);
 
@@ -25,7 +27,7 @@ public class UpdateProductPage extends JPanel {
     JButton backBtn = new JButton("Back");
 
     JLabel productNameLbl = new JLabel("-   Product Name : ");
-    JLabel productName = new JLabel();
+    JTextField productName = new JTextField();
 
 
     JLabel originalPriceLbl = new JLabel("-   Original Price : ");
@@ -51,6 +53,9 @@ public class UpdateProductPage extends JPanel {
 
     // create a button and add action listener
     JButton btnGet = new JButton("Add Category");
+
+    JButton btnDel = new JButton("Delete Category");
+
 
     JLabel msg = new JLabel();
 
@@ -96,6 +101,7 @@ public class UpdateProductPage extends JPanel {
 
         pane.setBounds(450,160,100,160);
         btnGet.setBounds(420,120,160,20);
+        btnDel.setBounds(420,330,160,20);
 
         //Fonts
         productNameLbl.setFont(labelFont);
@@ -146,7 +152,7 @@ public class UpdateProductPage extends JPanel {
                         msg.setText("You Enter Product Quantity :  0");
                     }
                     else {
-                        ConfirmPopUpUpdateData pop = new ConfirmPopUpUpdateData(frame,productName.getText());
+                        ConfirmPopUpUpdateData pop = new ConfirmPopUpUpdateData(frame,oldProductName);
                         if (pop.getResult() == 0) {
                             updateProcess();
                             msg.setBounds(210, 370, 200, 20);
@@ -195,7 +201,7 @@ public class UpdateProductPage extends JPanel {
                         msg.setText("You Enter Product Quantity :  0");
                     }
                     else {
-                        ConfirmDeletePopUp pop = new ConfirmDeletePopUp(frame,productName.getText());
+                        ConfirmDeletePopUp pop = new ConfirmDeletePopUp(frame,oldProductName);
                         if (pop.getResult() == 0) {
                             deleteProcess();
                             msg.setBounds(210, 370, 200, 20);
@@ -227,6 +233,28 @@ public class UpdateProductPage extends JPanel {
                     else{
                         msg.setText(databaseOperations.searchForCategory(popUp.getResult()));
                     }
+                }
+            }// end actionPerformed
+        });
+        btnDel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(list.getSelectedIndex()>=0) {
+                    ConfirmDeletePopUp popUp = new ConfirmDeletePopUp(frame, (String) list.getModel().getElementAt(list.getSelectedIndex()), 0);
+                    if (popUp.getResult() == 0) {
+                            DatabaseHelper.deleteCategory((String) list.getModel().getElementAt(list.getSelectedIndex()));
+                            list.setListData(databaseOperations.allCategories.toArray());
+                            pane.repaint();
+                            frame.revalidate();
+                            frame.repaint();
+                    }
+                    else{
+                        msg.setText("");
+
+                    }
+                }
+                else{
+                    msg.setBounds(235, 370, 200, 20);
+                    msg.setText("Select A Category !");
                 }
             }// end actionPerformed
         });
@@ -280,6 +308,7 @@ public class UpdateProductPage extends JPanel {
         frame.add(pane);
         frame.add(btnGet);
         frame.add(DeleteBtn);
+        frame.add(btnDel);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -351,7 +380,7 @@ public class UpdateProductPage extends JPanel {
             sellingPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
             quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
             dateLblValue.setText(databaseOperations.data.get(productNumber).getAddingToSystemDate());
-
+            oldProductName = String.valueOf(databaseOperations.data.get(productNumber).getName());
         }else{
             msg.setBounds(260,370,150,20);
             msg.setText("Not Found !");
@@ -376,7 +405,7 @@ public class UpdateProductPage extends JPanel {
         newProduct.setBuyPrice(Double.parseDouble(originalPriceValueLbl.getText()));
         newProduct.setSoldPrice(Double.parseDouble(sellingPriceValueLbl.getText()));
         newProduct.setCategory((String)list.getModel().getElementAt(list.getSelectedIndex()));
-        DatabaseHelper.updateProductValues(newProduct);
+        DatabaseHelper.updateProductValues(newProduct,oldProductName);
     }
 
     private void deleteProcess(){
