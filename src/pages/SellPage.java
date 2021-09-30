@@ -263,11 +263,12 @@ public class SellPage extends JPanel {
                         date = formatter.format(new Date()); /*بنجيب تاريخ النهارده اللي اتباع فيه المنتج ده*/
                         /*بنصفر هنا كل حاجه بعدها*/
                         DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber , (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr))); /*بنعدل الداتا بتاعت المنج*/
-                        DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total); /*بندخلها ل table المبيعات*/
+                        DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex())); /*بندخلها ل table المبيعات*/
                         quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
                         howManyValueTextField.setText("");
                         totalValueLbl.setText("");
                         searchField.setText("");
+                        DatabaseHelper.getAllSalesData();
                     }
                     else{
                         soldLbl.setText("");

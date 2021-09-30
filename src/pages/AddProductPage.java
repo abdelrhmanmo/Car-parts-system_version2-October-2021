@@ -204,7 +204,6 @@ public class AddProductPage extends JPanel{
         sellingPrice.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                jTextFieldKeyTyped(e);
                 if (e.getKeyChar() == KeyEvent.VK_ENTER ) {
                     insertBtnChecking();
                 }
@@ -213,7 +212,6 @@ public class AddProductPage extends JPanel{
         buyingPrice.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                jTextFieldKeyTyped(e);
                 if (e.getKeyChar() == KeyEvent.VK_ENTER ) {
                     insertBtnChecking();
                 }

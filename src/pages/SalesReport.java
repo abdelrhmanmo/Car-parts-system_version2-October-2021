@@ -1,5 +1,6 @@
 package pages;
 
+
 import Database.*;
 import classes.Product;
 
@@ -7,12 +8,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 
-public class showProductsPage extends JPanel{
+public class SalesReport extends JPanel {
 
     int numberOfPages;
     int currentPageNumber = 1;
@@ -28,12 +32,12 @@ public class showProductsPage extends JPanel{
     JButton nextBtn = new JButton("->");
     JButton previousBtn = new JButton("<-");
     JTextField pageNumberTF = new JTextField();
-    JComboBox<String> catList = new JComboBox<>();
-    JButton filterBtn = new JButton("Filter");
+    JComboBox<String> dateList = new JComboBox<>();
+    JButton filterBtn = new JButton("Search");
 
 
-    public showProductsPage(){
-        length = databaseOperations.data.toArray().length;
+    public SalesReport(){
+        length = databaseOperations.salesData.toArray().length;
 
         numberOfPages = length / 10;
         if(length%10 != 0){
@@ -88,12 +92,12 @@ public class showProductsPage extends JPanel{
             for(int j = 0; j < 6;j++) {
 
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName());
-                    case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
-                    case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
-                    case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-                    case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getAddingToSystemDate()));
-                    case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getCategory()));
+                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(productNumber).getName());
+                    case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getQuantity()));
+                    case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getSoldPrice()));
+                    case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getTotalPrice()));
+                    case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getSellingDate()));
+                    case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getCategory()));
                 }
             }
 
@@ -119,8 +123,8 @@ public class showProductsPage extends JPanel{
         pageNumberTF.setEditable(false);
         pageNumberTF.setHorizontalAlignment(0);
 
-        catList.setBounds(470,572,150,20);
-        filterBtn.setBounds(640,572,75,20);
+        dateList.setBounds(470,572,150,20);
+        filterBtn.setBounds(640,572,90,20);
 
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
@@ -134,7 +138,7 @@ public class showProductsPage extends JPanel{
                     headsTF[i].setBounds(0, 0, 151, 50);
                 }
                 case 1 -> {
-                    headsTF[i] = new JTextField("Original Price");
+                    headsTF[i] = new JTextField("Quantity");
                     headsTF[i].setBounds(150, 0, 92, 50);
                 }
                 case 2 -> {
@@ -142,11 +146,11 @@ public class showProductsPage extends JPanel{
                     headsTF[i].setBounds(240, 0, 92, 50);
                 }
                 case 3 -> {
-                    headsTF[i] = new JTextField("Quantity");
+                    headsTF[i] = new JTextField("Price");
                     headsTF[i].setBounds(330, 0, 92, 50);
                 }
                 case 4 -> {
-                    headsTF[i] = new JTextField("Date");
+                    headsTF[i] = new JTextField("Selling Date");
                     headsTF[i].setBounds(420, 0, 165, 50);
                 }
                 case 5 -> {
@@ -166,7 +170,7 @@ public class showProductsPage extends JPanel{
         }
 
         //Puts all cats name in ComboBox
-        catListData();
+        dateListData();
 
         //Fonts
 
@@ -180,24 +184,28 @@ public class showProductsPage extends JPanel{
         nextBtn.addActionListener((ActionEvent ae)-> nextPageOfData());
         previousBtn.addActionListener((ActionEvent ae)-> previousPageOfData());
 
-        filterBtn.addActionListener((ActionEvent ae)-> dataFiltration(Objects.requireNonNull(catList.getSelectedItem()).toString()));
+        filterBtn.addActionListener((ActionEvent ae)-> dataFiltration(Objects.requireNonNull(dateList.getSelectedItem()).toString()));
     }
 
     private void dataFiltration(String catName){
         //int i = 0;
         deleteData();
 
-        ArrayList<Product> productsArray;
-        productsArray = DatabaseHelper.getProductsFromSpecificCategory(catName);
-        for(int i = 0; i < productsArray.toArray().length; i++){
+        switch (catName) {
+            case "All" -> DatabaseHelper.getAllSalesData();
+            case "Today"->DatabaseHelper.getSpecificDateSalesData(getTodayDateString());
+            case "Yesterday"->DatabaseHelper.getSpecificDateSalesData(getYesterdayDateString());
+            case "Before Yesterday"->DatabaseHelper.getSpecificDateSalesData(getBeforeYesterdayDateString());
+        }
+        for(int i = 0; i < databaseOperations.salesData.toArray().length; i++){
             for(int j = 0; j < 6; j++){
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(productsArray.get(i).getName());
-                    case 1 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getBuyPrice()));
-                    case 2 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getSoldPrice()));
-                    case 3 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getQuantity()));
-                    case 4 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getAddingToSystemDate()));
-                    case 5 -> productsArr[i][j].setText(productsArray.get(i).getCategory());
+                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(i).getName());
+                    case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getQuantity()));
+                    case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getSoldPrice()));
+                    case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getTotalPrice()));
+                    case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getSellingDate()));
+                    case 5 -> productsArr[i][j].setText(databaseOperations.salesData.get(i).getCategory());
                 }
             }
         }
@@ -224,22 +232,11 @@ public class showProductsPage extends JPanel{
 
     }
 
-    private void catListData(){
-        String sql = "SELECT * FROM categories";
-        try{
-            Connection conn;
-            // db parameters
-            String url = "jdbc:sqlite:"+ DatabaseHelper.name;
-            conn = DriverManager.getConnection(url);
-            Statement stmt  = conn.createStatement();
-            ResultSet rs    = stmt.executeQuery(sql);
-            // loop through the result set
-            while (rs.next()) {
-                catList.addItem(rs.getString("category"));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+    private void dateListData(){
+        dateList.addItem("All");
+        dateList.addItem("Today");
+        dateList.addItem("Yesterday");
+        dateList.addItem("Before Yesterday");
     }
 
     private void frameSettings(){
@@ -256,12 +253,12 @@ public class showProductsPage extends JPanel{
                 frame.add(productsArr[i][j]);
             }
         }
-        frame.add(catList);
+        frame.add(dateList);
         frame.add(filterBtn);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Products Page");
+        frame.setTitle("Sales Report");
         frame.setSize(760,650);
         frame.setLocation(400,60);
         frame.setVisible(true);
@@ -285,5 +282,30 @@ public class showProductsPage extends JPanel{
 
     }
 
+    private String getTodayDateString() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(new Date());
+    }
+    private String getYesterdayDateString() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(yesterday());
+    }
+
+    private String getBeforeYesterdayDateString() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(beforeYesterday());
+    }
+
+    private Date yesterday() {
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return cal.getTime();
+    }
+
+    private Date beforeYesterday() {
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -2);
+        return cal.getTime();
+    }
 
 }

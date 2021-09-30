@@ -215,8 +215,8 @@ public class DatabaseHelper {
         getAllCategories();
     }
 
-    public static void insertSoldProductDetails(String productName , int quantity , String date, double price){
-        String sql = "INSERT INTO soldProducts(product_name,price,quantity,selling_date) VALUES(?,?,?,?)";
+    public static void insertSoldProductDetails(String productName , int quantity , String date, double price , String category){
+        String sql = "INSERT INTO soldProducts(product_name,price,quantity,selling_date,category) VALUES(?,?,?,?,?)";
 
         try  {
             Connection conn;
@@ -228,6 +228,7 @@ public class DatabaseHelper {
             pstmt.setDouble(2, price);
             pstmt.setInt(3, quantity);
             pstmt.setString(4, date);
+            pstmt.setString(5,category);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -287,6 +288,65 @@ public class DatabaseHelper {
             System.out.println(e.getMessage());
         }
         return databaseOperations.listOfProductsOfASpecificCategory;
+    }
+
+    public static void getAllSalesData(){
+        String sql = "SELECT * FROM soldProducts";
+        System.out.println(sql);
+        databaseOperations.salesData.clear();
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+
+                rs.getString("product_name");
+                /*This is how we can add data and use it in the system*/
+                Product p = new Product();
+                p.setName(rs.getString("product_name"));
+                p.setTotalPrice(rs.getDouble("price"));
+                p.setQuantity(rs.getInt("quantity"));
+                p.setSellingDate(rs.getString("selling_date"));
+                p.setCategory(rs.getString("category"));
+                p.setSoldPrice(rs.getDouble("price")/rs.getInt("quantity"));
+                databaseOperations.salesData.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    public static void getSpecificDateSalesData(String date){
+        String sql = "SELECT * FROM soldProducts WHERE selling_date LIKE '%"+date+"%'";
+        System.out.println(sql);
+        databaseOperations.salesData.clear();
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+
+                rs.getString("product_name");
+                /*This is how we can add data and use it in the system*/
+                Product p = new Product();
+                p.setName(rs.getString("product_name"));
+                p.setTotalPrice(rs.getDouble("price"));
+                p.setQuantity(rs.getInt("quantity"));
+                p.setSellingDate(rs.getString("selling_date"));
+                p.setCategory(rs.getString("category"));
+                p.setSoldPrice(rs.getDouble("price")/rs.getInt("quantity"));
+                databaseOperations.salesData.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void deleteCategory(String category){

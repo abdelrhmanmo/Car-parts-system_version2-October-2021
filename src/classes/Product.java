@@ -13,7 +13,7 @@ public class Product {
     String addingToSystemDate;// date of the process /*ده عشان يسادعنا نخزن التواريخ اللي اتباعت فيها المنتجات وهتلاقيني حدثت الداتا كمان راجع عليها برضه*/
     String sellingDate;// date of the process /*ده عشان يسادعنا نخزن التواريخ اللي اتباعت فيها المنتجات وهتلاقيني حدثت الداتا كمان راجع عليها برضه*/
     private static final DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); // format () // ده فورمات بس لشكل التاريخ انا خليته يطبعها فا ابقا شوف شكل التاريخ في الكونسول
-
+    double totalPrice;
     public Product(String name , double soldPrice , double buyPrice , int quantity , Date addingToSystemDate,String category){
         this.name = name;
         this.soldPrice = soldPrice;
@@ -32,6 +32,15 @@ public class Product {
         this.addingToSystemDate = formatter.format(new Date());
         this.sellingDate = "";
         this.category = "";
+        this.totalPrice=0.0;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
     public void setName(String name) {

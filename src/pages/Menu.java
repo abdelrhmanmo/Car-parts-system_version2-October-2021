@@ -39,7 +39,8 @@ public class Menu extends JPanel {
             frame.dispose();
         });
         reportsBtn.addActionListener((ActionEvent ae) ->{
-            System.out.println("Report Button !!");
+            new SalesReport();
+            frame.dispose();
         });
     }
     private void Design(){

@@ -16,6 +16,8 @@ public class databaseOperations {
 
     public static ArrayList<Product> listOfProductsOfASpecificCategory = new ArrayList<>();
 
+    public static  ArrayList<Product> salesData = new ArrayList<>();
+
     public databaseOperations(){
 
         //try to run after deleting system.db
@@ -26,7 +28,7 @@ public class databaseOperations {
         DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30,new Date()));*/
         DatabaseHelper.getAllData();
         DatabaseHelper.getAllCategories();
-
+        DatabaseHelper.getAllSalesData();
     }
     public static int search(String productName , String category){
 
