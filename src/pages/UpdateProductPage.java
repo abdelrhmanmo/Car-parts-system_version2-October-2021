@@ -60,11 +60,16 @@ public class UpdateProductPage extends JPanel {
     JLabel msg = new JLabel();
 
 
-    public UpdateProductPage(){
+    public UpdateProductPage(int productNumber){
+
+        if(productNumber != -1){
+            quickUpdate(productNumber);
+        }
+
         typingRules();
         Design();
         frameSettings();
-        buttonsAction();
+        buttonsAction(productNumber);
 
     }
 
@@ -124,7 +129,7 @@ public class UpdateProductPage extends JPanel {
         }
     }
 
-    private void buttonsAction(){
+    private void buttonsAction(int productNumber){
         updateBtn.addActionListener((ActionEvent ae) ->{
             if(sellingPriceValueLbl.getText().isEmpty() || originalPriceValueLbl.getText().isEmpty() || quantityValueLbl.getText().isEmpty()) {
 
@@ -170,7 +175,11 @@ public class UpdateProductPage extends JPanel {
         });
 
         backBtn.addActionListener((ActionEvent ae)->{
-            new Menu();
+            if(productNumber == -1) {
+                new Menu();
+            }else{
+                new showProductsPage(400,60);
+            }
             frame.dispose();
         });
 
@@ -241,11 +250,11 @@ public class UpdateProductPage extends JPanel {
                 if(list.getSelectedIndex()>=0) {
                     ConfirmDeletePopUp popUp = new ConfirmDeletePopUp(frame, (String) list.getModel().getElementAt(list.getSelectedIndex()), 0);
                     if (popUp.getResult() == 0) {
-                            DatabaseHelper.deleteCategory((String) list.getModel().getElementAt(list.getSelectedIndex()));
-                            list.setListData(databaseOperations.allCategories.toArray());
-                            pane.repaint();
-                            frame.revalidate();
-                            frame.repaint();
+                        DatabaseHelper.deleteCategory((String) list.getModel().getElementAt(list.getSelectedIndex()));
+                        list.setListData(databaseOperations.allCategories.toArray());
+                        pane.repaint();
+                        frame.revalidate();
+                        frame.repaint();
                     }
                     else{
                         msg.setText("");
@@ -285,6 +294,20 @@ public class UpdateProductPage extends JPanel {
                 }
             }
         });
+    }
+
+    public void quickUpdate(int productNumber){
+
+        msg.setText("");
+        searchField.setText(String.valueOf(databaseOperations.data.get(productNumber).getName()));
+        list.setSelectedIndex(getCategoryIndex(databaseOperations.data.get(productNumber)));
+        productName.setText(searchField.getText());
+        originalPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
+        sellingPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
+        quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+        dateLblValue.setText(databaseOperations.data.get(productNumber).getAddingToSystemDate());
+        oldProductName = String.valueOf(databaseOperations.data.get(productNumber).getName());
+
     }
 
     private void frameSettings(){
