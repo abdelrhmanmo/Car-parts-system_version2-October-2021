@@ -5,8 +5,9 @@ import classes.Product;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class showProductsPage extends JPanel{
     JButton filterBtn = new JButton("Filter");
 
 
-    public showProductsPage(){
+    public showProductsPage(double xFrame, double yFrame){
         length = databaseOperations.data.toArray().length;
 
         numberOfPages = length / 10;
@@ -46,7 +47,7 @@ public class showProductsPage extends JPanel{
 
         Design();
         buttonsAction();
-        frameSettings();
+        frameSettings(xFrame,yFrame);
     }
 
     private void dataTableDesign(){
@@ -87,14 +88,29 @@ public class showProductsPage extends JPanel{
             productNumber++;
             for(int j = 0; j < 6;j++) {
 
-                switch (j) {
-                    case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName());
-                    case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
-                    case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
-                    case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-                    case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getAddingToSystemDate()));
-                    case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getCategory()));
+                if(databaseOperations.data.get(productNumber).getQuantity() != 0) {
+                    switch (j) {
+                        case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName());
+                        case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
+                        case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
+                        case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+                        case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getAddingToSystemDate()));
+                        case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getCategory()));
+                    }
                 }
+
+                int x = i, y = j;
+                productsArr[i][j].addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+
+                        if(!productsArr[x][y].getText().equals("")) {
+                            frame.dispose();
+                            new UpdateProductPage(x);
+                        }
+                    }
+                });
+
             }
 
         }
@@ -187,6 +203,11 @@ public class showProductsPage extends JPanel{
         //int i = 0;
         deleteData();
 
+        if(catName.equals("All")){
+            new showProductsPage(frame.getLocation().getX(), frame.getLocation().getY());
+            frame.dispose();
+        }
+
         ArrayList<Product> productsArray;
         productsArray = DatabaseHelper.getProductsFromSpecificCategory(catName);
         for(int i = 0; i < productsArray.toArray().length; i++){
@@ -233,6 +254,8 @@ public class showProductsPage extends JPanel{
             conn = DriverManager.getConnection(url);
             Statement stmt  = conn.createStatement();
             ResultSet rs    = stmt.executeQuery(sql);
+
+            catList.addItem("All");
             // loop through the result set
             while (rs.next()) {
                 catList.addItem(rs.getString("category"));
@@ -242,7 +265,7 @@ public class showProductsPage extends JPanel{
         }
     }
 
-    private void frameSettings(){
+    private void frameSettings(double xFrame,double yFrame){
 
         frame.add(backBtn);
         frame.add(nextBtn);
@@ -263,26 +286,10 @@ public class showProductsPage extends JPanel{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Products Page");
         frame.setSize(760,650);
-        frame.setLocation(400,60);
+        int xLocate = (int) xFrame, yLocate = (int) yFrame;
+        frame.setLocation(xLocate,yLocate);  //400   60
         frame.setVisible(true);
         frame.setResizable(false);
-    }
-
-    public void paint(Graphics g){
-
-        for(int i = 1; i < 4; i++) {
-            switch (i){
-                case 1:
-                    g.drawLine(150, 0, 150, 550);
-                case 2:
-                    g.drawLine(240, 0, 240, 550);
-                case 3:
-                    g.drawLine(330, 0, 330, 550);
-                case 4:
-                    g.drawLine(420, 0, 420, 550);
-            }
-        }
-
     }
 
 
