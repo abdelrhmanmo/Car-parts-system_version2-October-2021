@@ -23,9 +23,9 @@ public class databaseOperations {
         //try to run after deleting system.db
         DatabaseHelper.setName("system.db"); // db is extension for database file
         DatabaseHelper.createNewDatabase();
-/*      DatabaseHelper.insertData(new Product("تيست",1000.0,1200.0,50,new Date()));
-        DatabaseHelper.insertData(new Product("Test1",1000.0,1200.0,30,new Date()));
-        DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30,new Date()));*/
+/*      DatabaseHelper.insertData(new Product("تيست",1000.0,1200.0,50,new Date(),"Cat1"));
+        DatabaseHelper.insertData(new Product("Test1",1000.0,1200.0,30,new Date(),"Cat2"));
+        DatabaseHelper.insertData(new Product("Test2",1000.0,1200.0,30,new Date(), "Cat1"));*/
         DatabaseHelper.getAllData();
         DatabaseHelper.getAllCategories();
         DatabaseHelper.getAllSalesData();
