@@ -251,27 +251,31 @@ public class SellPage extends JPanel {
                                 databaseOperations.data.get(productNumber).getSoldPrice();
                         totalValueLbl.setText(String.valueOf(total));
                         pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
+
+                        if(pop.getResult() == 0){
+                            soldLbl.setBounds(240, 370, 150, 20);
+                            soldLbl.setText("Sold Successfully !");
+                            date = formatter.format(new Date());
+
+                            DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber ,
+                                    (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr)));
+
+                            DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex()));
+
+                            //Empty Fields
+                            quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+                            howManyValueTextField.setText("");
+                            totalValueLbl.setText("");
+                            searchField.setText("");
+                            DatabaseHelper.getAllSalesData();
+                        }
+                        else{
+                            soldLbl.setText("");
+                        }
                     }
                     else{
                         soldLbl.setBounds(220, 370, 160, 20);
                         soldLbl.setText("Not Available Quantity");
-                    }
-                    /*هنا بنتأكد اذا كان اختار انه عاوز يبيع فعلا ولا لا*/
-                    if(pop.getResult() == 0){
-                        soldLbl.setBounds(240, 370, 150, 20);
-                        soldLbl.setText("Sold Successfully !");
-                        date = formatter.format(new Date()); /*بنجيب تاريخ النهارده اللي اتباع فيه المنتج ده*/
-                        /*بنصفر هنا كل حاجه بعدها*/
-                        DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber , (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr))); /*بنعدل الداتا بتاعت المنج*/
-                        DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex())); /*بندخلها ل table المبيعات*/
-                        quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-                        howManyValueTextField.setText("");
-                        totalValueLbl.setText("");
-                        searchField.setText("");
-                        DatabaseHelper.getAllSalesData();
-                    }
-                    else{
-                        soldLbl.setText("");
                     }
             }else {
                 soldLbl.setBounds(260, 370, 150, 20);
