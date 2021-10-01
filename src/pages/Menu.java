@@ -11,7 +11,8 @@ public class Menu extends JPanel {
             wantedBtn = new JButton("Wanted Products"),
             showBtn = new JButton("Show Products"),
             updateBtn = new JButton("Update Data"),
-            reportsBtn = new JButton("Sales Reports");
+            reportsBtn = new JButton("Sales Reports"),
+            exitBtn = new JButton("EXIT");
 
     public Menu (){
         buttonsActions();
@@ -28,20 +29,22 @@ public class Menu extends JPanel {
             frame.dispose();
         });
         wantedBtn.addActionListener((ActionEvent ae) ->{
-            System.out.println("Wanted Button !!");
+            new wantedProductsPage();
+            frame.dispose();
         });
         showBtn.addActionListener((ActionEvent ae) ->{
-            new showProductsPage();
+            new showProductsPage(400,60);
             frame.dispose();
         });
         updateBtn.addActionListener((ActionEvent ae) ->{
-            new UpdateProductPage();
+            new UpdateProductPage(-1);
             frame.dispose();
         });
         reportsBtn.addActionListener((ActionEvent ae) ->{
             new SalesReport();
             frame.dispose();
         });
+        exitBtn.addActionListener((ActionEvent ae) -> frame.dispose());
     }
     private void Design(){
 
@@ -56,6 +59,8 @@ public class Menu extends JPanel {
         updateBtn.setBounds(xPositionForBtns*7,yPositionForBtns*3,widthForBtns,heightForBtns);
         reportsBtn.setBounds(xPositionForBtns*7,yPositionForBtns*5,widthForBtns,heightForBtns);
 
+        exitBtn.setBounds(240,310,widthForBtns/2,25);
+
     }
     private void frameSettings(){
 
@@ -65,6 +70,7 @@ public class Menu extends JPanel {
         frame.add(showBtn);
         frame.add(updateBtn);
         frame.add(reportsBtn);
+        frame.add(exitBtn);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
