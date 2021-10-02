@@ -268,6 +268,7 @@ public class SellPage extends JPanel {
                             totalValueLbl.setText("");
                             searchField.setText("");
                             DatabaseHelper.getAllSalesData();
+                            DatabaseHelper.getAllData();
                         }
                         else{
                             soldLbl.setText("");

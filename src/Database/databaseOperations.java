@@ -18,6 +18,8 @@ public class databaseOperations {
 
     public static  ArrayList<Product> salesData = new ArrayList<>();
 
+    public static ArrayList<Product> wantedProducts = new ArrayList<>();
+
     public databaseOperations(){
 
         //try to run after deleting system.db
@@ -29,6 +31,7 @@ public class databaseOperations {
         DatabaseHelper.getAllData();
         DatabaseHelper.getAllCategories();
         DatabaseHelper.getAllSalesData();
+        DatabaseHelper.getWantedProducts();
     }
     public static int search(String productName , String category){
 

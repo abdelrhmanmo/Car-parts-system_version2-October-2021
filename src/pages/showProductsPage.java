@@ -90,7 +90,7 @@ public class showProductsPage extends JPanel{
 
                 if(databaseOperations.data.get(productNumber).getQuantity() != 0) {
                     switch (j) {
-                        case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName());
+                        case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName().length() > 9 ? databaseOperations.data.get(productNumber).getName().substring(0,9).concat("...") : databaseOperations.data.get(productNumber).getName());
                         case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
                         case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
                         case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
@@ -213,7 +213,7 @@ public class showProductsPage extends JPanel{
         for(int i = 0; i < productsArray.toArray().length; i++){
             for(int j = 0; j < 6; j++){
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(productsArray.get(i).getName());
+                    case 0 -> productsArr[i][j].setText(productsArray.get(i).getName().length() > 9 ? productsArray.get(i).getName().substring(0,9).concat("...") : productsArray.get(i).getName());
                     case 1 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getBuyPrice()));
                     case 2 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getSoldPrice()));
                     case 3 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getQuantity()));

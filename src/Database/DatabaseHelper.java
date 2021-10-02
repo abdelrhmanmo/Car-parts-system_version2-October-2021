@@ -89,7 +89,7 @@ public class DatabaseHelper {
         return "Inserted Successfully!";
     }
     public static void getAllData(){
-            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products";
+            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products WHERE quantity > 0";
             databaseOperations.data.clear();
             try{
                 Connection conn;
@@ -152,7 +152,7 @@ public class DatabaseHelper {
         }
     }
 
-    public static String updateProductValues(Product product , String oldName){
+    public static void updateProductValues(Product product , String oldName){
         String sql = "UPDATE products SET product_name = ?,sold_price = ?,buy_price = ? , quantity = ? , category = ? WHERE product_name = ?";
 
 
@@ -173,11 +173,10 @@ public class DatabaseHelper {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return "This Product Already Exist";
+            return;
         }
         getAllData();
         getAllCategories();
-        return "Updated Successfully";
     }
 
     public static void updateProductQuantity (Product product , int index , int newQuantity){
@@ -283,6 +282,7 @@ public class DatabaseHelper {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"));
                 databaseOperations.listOfProductsOfASpecificCategory.add(p);
+                System.out.println(p.getName());
             }
         } catch (SQLException | ParseException e) {
             System.out.println(e.getMessage());
@@ -373,6 +373,34 @@ public class DatabaseHelper {
 
         getAllCategories();
         getAllData();
+    }
+
+    public static void getWantedProducts(){
+        String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products WHERE quantity <= 5";
+        databaseOperations.wantedProducts.clear();
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+                System.out.println(rs.getString("product_name") +  "\t" +
+                        rs.getDouble("sold_price") + "\t" +rs.getDouble("buy_price")+"\t" +
+                        rs.getInt("quantity") + "\t" +rs.getString("adding_product_date") + "\t"+rs.getString("category"));
+
+                /*This is how we can add data and use it in the system*/
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"));
+                databaseOperations.wantedProducts.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
 }

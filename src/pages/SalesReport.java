@@ -2,15 +2,15 @@ package pages;
 
 
 import Database.*;
-import classes.Product;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -92,16 +92,36 @@ public class SalesReport extends JPanel {
             for(int j = 0; j < 6;j++) {
 
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(productNumber).getName());
+                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(productNumber).getName().length()>9? databaseOperations.salesData.get(productNumber).getName().substring(0,9).concat("..."):databaseOperations.salesData.get(productNumber).getName());
                     case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getQuantity()));
                     case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getSoldPrice()));
                     case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getTotalPrice()));
                     case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getSellingDate()));
                     case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getCategory()));
                 }
+                int x = i, y = j;
+                int finalProductNumber = productNumber;
+                productsArr[i][j].addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+
+                        if(databaseOperations.salesData.get(finalProductNumber).getName().length()<9) {
+                            if (productsArr[x][y].getText().equals(databaseOperations.salesData.get(finalProductNumber).getName())) {
+                                new ProductNamePopUp(frame, databaseOperations.salesData.get(finalProductNumber).getName());
+                            }
+                        }
+                        else{
+                            if(productsArr[x][y].getText().equals(databaseOperations.salesData.get(finalProductNumber).getName().substring(0, 9).concat("..."))){
+                                new ProductNamePopUp(frame, databaseOperations.salesData.get(finalProductNumber).getName());
+                            }
+                        }
+                    }
+                });
             }
 
         }
+
+
     }
 
     private void deleteData(){      //when its less than 10 rows
@@ -200,7 +220,7 @@ public class SalesReport extends JPanel {
         for(int i = 0; i < databaseOperations.salesData.toArray().length; i++){
             for(int j = 0; j < 6; j++){
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(i).getName());
+                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(i).getName().length()>9?databaseOperations.salesData.get(i).getName().substring(0,9).concat("..."):databaseOperations.salesData.get(i).getName());
                     case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getQuantity()));
                     case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getSoldPrice()));
                     case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getTotalPrice()));
