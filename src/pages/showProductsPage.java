@@ -106,7 +106,7 @@ public class showProductsPage extends JPanel{
 
                         if(!productsArr[x][y].getText().equals("")) {
                             frame.dispose();
-                            new UpdateProductPage(x);
+                            new ChoiceFramePage(x);
                         }
                     }
                 });

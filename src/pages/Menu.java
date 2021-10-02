@@ -21,7 +21,7 @@ public class Menu extends JPanel {
     }
     private void buttonsActions(){
         sellBtn.addActionListener((ActionEvent ae) ->{
-            new SellPage();
+            new SellPage(-1);
             frame.dispose();
         });
         addBtn.addActionListener((ActionEvent ae) ->{

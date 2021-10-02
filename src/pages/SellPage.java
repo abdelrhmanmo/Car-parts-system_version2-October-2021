@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import Database.*;
+import classes.Product;
 
 public class SellPage extends JPanel {
     JFrame frame = new JFrame();
@@ -45,7 +46,10 @@ public class SellPage extends JPanel {
     JScrollPane pane = new JScrollPane(list);
 
 
-    public SellPage(){
+    public SellPage(int productNumber){
+        if (productNumber != -1){
+            quickUpdate(productNumber);
+        }
         typingRules();
         Design();
         frameSettings();
@@ -297,6 +301,27 @@ public class SellPage extends JPanel {
             soldLbl.setBounds(260,370,150,20);
             soldLbl.setText("Not Found !");
         }
+    }
+
+    public void quickUpdate(int productNumber){
+
+        soldLbl.setText("");
+        searchField.setText(String.valueOf(databaseOperations.data.get(productNumber).getName()));
+        list.setSelectedIndex(getCategoryIndex(databaseOperations.data.get(productNumber)));
+        originalPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
+        sellingPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
+        quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+    }
+
+    private int getCategoryIndex(Product product){
+        System.out.println(product.getCategory());
+        for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
+            System.out.println(databaseOperations.allCategories.get(i));
+            if(product.getCategory().equals(databaseOperations.allCategories.get(i))){
+                return i;
+            }
+        }
+        return -1;
     }
 
 }
