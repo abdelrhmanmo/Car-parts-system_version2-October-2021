@@ -63,6 +63,7 @@ public class UpdateProductPage extends JPanel {
     public UpdateProductPage(int productNumber){
 
         if(productNumber != -1){
+            System.out.println(productNumber);
             quickUpdate(productNumber);
         }
 
@@ -175,11 +176,7 @@ public class UpdateProductPage extends JPanel {
         });
 
         backBtn.addActionListener((ActionEvent ae)->{
-            if(productNumber == -1) {
-                new Menu();
-            }else{
-                new showProductsPage(400,60);
-            }
+            new Menu();
             frame.dispose();
         });
 
@@ -245,53 +242,49 @@ public class UpdateProductPage extends JPanel {
                 }
             }// end actionPerformed
         });
-        btnDel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(list.getSelectedIndex()>=0) {
-                    ConfirmDeletePopUp popUp = new ConfirmDeletePopUp(frame, (String) list.getModel().getElementAt(list.getSelectedIndex()), 0);
-                    if (popUp.getResult() == 0) {
-                        DatabaseHelper.deleteCategory((String) list.getModel().getElementAt(list.getSelectedIndex()));
-                        list.setListData(databaseOperations.allCategories.toArray());
-                        pane.repaint();
-                        frame.revalidate();
-                        frame.repaint();
-                    }
-                    else{
-                        msg.setText("");
-
-                    }
+        // end actionPerformed
+        btnDel.addActionListener(e -> {
+            if(list.getSelectedIndex()>=0) {
+                ConfirmDeletePopUp popUp = new ConfirmDeletePopUp(frame, (String) list.getModel().getElementAt(list.getSelectedIndex()), 0);
+                if (popUp.getResult() == 0) {
+                    DatabaseHelper.deleteCategory((String) list.getModel().getElementAt(list.getSelectedIndex()));
+                    list.setListData(databaseOperations.allCategories.toArray());
+                    pane.repaint();
+                    frame.revalidate();
+                    frame.repaint();
                 }
                 else{
-                    msg.setBounds(235, 370, 200, 20);
-                    msg.setText("Select A Category !");
+                    msg.setText("");
+
                 }
-            }// end actionPerformed
+            }
+            else{
+                msg.setBounds(235, 370, 200, 20);
+                msg.setText("Select A Category !");
+            }
         });
 
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(list.getSelectedIndex() != -1) {
-                    DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String) list.getModel().getElementAt(list.getSelectedIndex()));
-                    ConfirmPopUp pop = new ConfirmPopUp(frame);
-                    if (pop.getProductName().equals("null")) {
-                        searchField.setText("");
-                        msg.setBounds(235, 370, 200, 20);
-                        msg.setText("Enter Product Name !");
-                    } else if (pop.getProductName().equals(" ")) {
-                        searchField.setText("");
-                        msg.setBounds(235, 370, 200, 20);
-                        msg.setText("Enter Product Name !");
-                    } else {
-                        searchField.setText(pop.getProductName());
-                        msg.setText("");
-                        searchProcess();
-                    }
-                }
-                else{
+        searchBtn.addActionListener(e -> {
+            if(list.getSelectedIndex() != -1) {
+                DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String) list.getModel().getElementAt(list.getSelectedIndex()));
+                ConfirmPopUp pop = new ConfirmPopUp(frame);
+                if (pop.getProductName().equals("null")) {
+                    searchField.setText("");
                     msg.setBounds(235, 370, 200, 20);
-                    msg.setText("Select A Category !");
+                    msg.setText("Enter Product Name !");
+                } else if (pop.getProductName().equals(" ")) {
+                    searchField.setText("");
+                    msg.setBounds(235, 370, 200, 20);
+                    msg.setText("Enter Product Name !");
+                } else {
+                    searchField.setText(pop.getProductName());
+                    msg.setText("");
+                    searchProcess();
                 }
+            }
+            else{
+                msg.setBounds(235, 370, 200, 20);
+                msg.setText("Select A Category !");
             }
         });
     }
@@ -349,8 +342,10 @@ public class UpdateProductPage extends JPanel {
                 jTextFieldKeyTyped(e);
                 if (e.getKeyChar() == KeyEvent.VK_ENTER ) {
                     if(!(searchField.getText().isEmpty() || quantityValueLbl.getText().isEmpty() || productName.getText().isEmpty() || sellingPriceValueLbl.getText().isEmpty() || originalPriceValueLbl.getText().isEmpty() || quantityValueLbl.getText().isEmpty())) {
-
+                        System.out.println("ENTER");
                         updateProcess();
+                        msg.setBounds(210, 370, 200, 20);
+                        msg.setText("Updated Successfully!");
                     }else{
                         msg.setBounds(255,370,200,20);
                         msg.setText("Fill All Fields !");
@@ -428,10 +423,10 @@ public class UpdateProductPage extends JPanel {
         newProduct.setBuyPrice(Double.parseDouble(originalPriceValueLbl.getText()));
         newProduct.setSoldPrice(Double.parseDouble(sellingPriceValueLbl.getText()));
         newProduct.setCategory((String)list.getModel().getElementAt(list.getSelectedIndex()));
-        DatabaseHelper.updateProductValues(newProduct,oldProductName);
+        DatabaseHelper.updateProductValues(newProduct,oldProductName,(String)list.getModel().getElementAt(list.getSelectedIndex()));
     }
 
     private void deleteProcess(){
-        DatabaseHelper.deleteData(searchField.getText());
+        DatabaseHelper.deleteData(searchField.getText(),(String)list.getModel().getElementAt(list.getSelectedIndex()));
     }
 }

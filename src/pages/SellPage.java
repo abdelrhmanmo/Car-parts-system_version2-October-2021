@@ -78,8 +78,8 @@ public class SellPage extends JPanel {
                 soldLbl.setBounds(235,370,200,20);
                 soldLbl.setText("Select A Category!");
             }
-              else{
-                  DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String) list.getModel().getElementAt(list.getSelectedIndex()));
+            else{
+                DatabaseHelper.searchForProductsInStoke(searchField.getText(),(String) list.getModel().getElementAt(list.getSelectedIndex()));
                 ConfirmPopUp pop = new ConfirmPopUp(frame);
                 if (pop.getProductName().equals("null")){
                     searchField.setText("");
@@ -249,43 +249,43 @@ public class SellPage extends JPanel {
         String date;
         double total = 0.0;
         if (productNumber != -1) {
-                    String howManyStr = howManyValueTextField.getText();
-                    if (Integer.parseInt(howManyStr) <= databaseOperations.data.get(productNumber).getQuantity()) {
-                        total = Integer.parseInt(howManyStr) *
-                                databaseOperations.data.get(productNumber).getSoldPrice();
-                        totalValueLbl.setText(String.valueOf(total));
-                        pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
+            String howManyStr = howManyValueTextField.getText();
+            if (Integer.parseInt(howManyStr) <= databaseOperations.data.get(productNumber).getQuantity()) {
+                total = Integer.parseInt(howManyStr) *
+                        databaseOperations.data.get(productNumber).getSoldPrice();
+                totalValueLbl.setText(String.valueOf(total));
+                pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
 
-                        if(pop.getResult() == 0){
-                            soldLbl.setBounds(240, 370, 150, 20);
-                            soldLbl.setText("Sold Successfully !");
-                            date = formatter.format(new Date());
+                if(pop.getResult() == 0){
+                    soldLbl.setBounds(240, 370, 150, 20);
+                    soldLbl.setText("Sold Successfully !");
+                    date = formatter.format(new Date());
 
-                            DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber ,
-                                    (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr)));
+                    DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber ,
+                            (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr)),(String)list.getModel().getElementAt(list.getSelectedIndex()));
 
-                            DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex()));
+                    DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex()));
 
-                            //Empty Fields
-                            quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-                            howManyValueTextField.setText("");
-                            totalValueLbl.setText("");
-                            searchField.setText("");
-                            DatabaseHelper.getAllSalesData();
-                            DatabaseHelper.getAllData();
-                        }
-                        else{
-                            soldLbl.setText("");
-                        }
-                    }
-                    else{
-                        soldLbl.setBounds(220, 370, 160, 20);
-                        soldLbl.setText("Not Available Quantity");
-                    }
-            }else {
-                soldLbl.setBounds(260, 370, 150, 20);
-                soldLbl.setText("Not Found !");
+                    //Empty Fields
+                    quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+                    howManyValueTextField.setText("");
+                    totalValueLbl.setText("");
+                    searchField.setText("");
+                    DatabaseHelper.getAllSalesData();
+                    DatabaseHelper.getAllData();
+                }
+                else{
+                    soldLbl.setText("");
+                }
             }
+            else{
+                soldLbl.setBounds(220, 370, 160, 20);
+                soldLbl.setText("Not Available Quantity");
+            }
+        }else {
+            soldLbl.setBounds(260, 370, 150, 20);
+            soldLbl.setText("Not Found !");
+        }
     }
 
     private void aboutProcess(){

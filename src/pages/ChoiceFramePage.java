@@ -4,12 +4,12 @@ import Database.databaseOperations;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 public class ChoiceFramePage extends JPanel {
 
     int productNumber;
+    String sProductName;
 
     JFrame frame = new JFrame();
     JButton updateProductData = new JButton("Update Product Data"),
@@ -25,38 +25,30 @@ public class ChoiceFramePage extends JPanel {
     }
 
     private void buttonsActions() {
-        updateProductData.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new UpdateProductPage(productNumber);
-            }
+        updateProductData.addActionListener(e -> {
+            frame.dispose();
+            new UpdateProductPage(productNumber);
         });
-        sellProduct.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new SellPage(productNumber);
-            }
+        sellProduct.addActionListener(e -> {
+            frame.dispose();
+            new SellPage(productNumber);
         });
 
-        cancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new showProductsPage(400,60);
-            }
+        cancel.addActionListener(e -> {
+            frame.dispose();
+            new showProductsPage(400,60);
         });
 
     }
     private void Design(){
 
-        productName.setText("Product name: "+databaseOperations.data.get(productNumber).getName());
+        this.sProductName = databaseOperations.data.get(productNumber).getName();
+        productName.setText("Product name: "+sProductName);
         productName.setForeground(Color.BLACK);
-        productName.setBounds(50,20,750,35);
-        updateProductData.setBounds(300,90,160,35);
-        sellProduct.setBounds(300,180,160,35);
-        cancel.setBounds(300,270,160,35);
+        productName.setBounds(130,20,750,35);
+        updateProductData.setBounds(120,90,160,35);
+        sellProduct.setBounds(120,180,160,35);
+        cancel.setBounds(120,270,160,35);
 
     }
     private void frameSettings(){
@@ -69,7 +61,13 @@ public class ChoiceFramePage extends JPanel {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Choice");
-        frame.setSize(800,420);
+        int width = sProductName.length();
+        if(width >= 50){
+            width = 500;
+        }else{
+            width = 400;
+        }
+        frame.setSize(width,420);
         frame.setLocation(500,50);
         frame.setVisible(true);
         frame.setResizable(false);

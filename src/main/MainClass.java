@@ -1,7 +1,7 @@
 package main;
 
 import Database.databaseOperations;
-import pages.Menu;
+import pages.*;
 
 
 

@@ -1,16 +1,5 @@
 package Database;
 
-/*
-* some imports for data base*/
-
-
-//make sure to download this first https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.8.11/sqlite-jdbc-3.8.11.jar
-
-// after download and extract -- move this file to the file of project before you going to the src
-
-//hit ctrl + shift + alt + s (add the sqlite-jdbc-3.8.11.jar) -- apply -- ok
-
-//try this code if the console print (connection to SQLite has been established) then it works , if not that it doesn't work
 
 import classes.Product;
 
@@ -89,7 +78,7 @@ public class DatabaseHelper {
         return "Inserted Successfully!";
     }
     public static void getAllData(){
-            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products WHERE quantity > 0";
+            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products WHERE quantity >= 0";
             databaseOperations.data.clear();
             try{
                 Connection conn;
@@ -115,8 +104,8 @@ public class DatabaseHelper {
                 e.printStackTrace();
             }
     }
-    public static void deleteData(String productName){
-        String sql = "DELETE FROM products WHERE product_name = ?";
+    public static void deleteData(String productName , String category){
+        String sql = "DELETE FROM products WHERE product_name = ? AND category = ?";
 
         try  {
             Connection conn;
@@ -125,12 +114,16 @@ public class DatabaseHelper {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, productName);
+            pstmt.setString(2, category);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         getAllData();
+        getWantedProducts();
+        getAllCategories();
+        getAllSalesData();
     }
 
     public static void getAllCategories(){
@@ -152,8 +145,8 @@ public class DatabaseHelper {
         }
     }
 
-    public static void updateProductValues(Product product , String oldName){
-        String sql = "UPDATE products SET product_name = ?,sold_price = ?,buy_price = ? , quantity = ? , category = ? WHERE product_name = ?";
+    public static void updateProductValues(Product product , String oldName,String category){
+        String sql = "UPDATE products SET product_name = ?,sold_price = ?,buy_price = ? , quantity = ? , category = ? WHERE product_name = ? AND category = ?";
 
 
         System.out.println(product.toString());
@@ -169,6 +162,7 @@ public class DatabaseHelper {
             pstmt.setInt(4, product.getQuantity());
             pstmt.setString(5, product.getCategory());
             pstmt.setString(6, oldName);
+            pstmt.setString(7, category);
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -176,11 +170,13 @@ public class DatabaseHelper {
             return;
         }
         getAllData();
+        getWantedProducts();
         getAllCategories();
+        getAllSalesData();
     }
 
-    public static void updateProductQuantity (Product product , int index , int newQuantity){
-        String sql = "UPDATE products SET quantity = ? WHERE product_name = ?";
+    public static void updateProductQuantity (Product product , int index , int newQuantity , String category){
+        String sql = "UPDATE products SET quantity = ? WHERE product_name = ? AND  category = ?";
 
         try  {
             Connection conn;
@@ -190,12 +186,42 @@ public class DatabaseHelper {
             // set the corresponding param
             pstmt.setInt(1, newQuantity);
             pstmt.setString(2, product.getName());
+            pstmt.setString(3,category);
             // update
             pstmt.executeUpdate();
             databaseOperations.data.get(index).setQuantity(newQuantity);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        getAllData();
+        getWantedProducts();
+        getAllCategories();
+        getAllSalesData();
+    }
+
+    public static void updateProductQuantity (String product , int newQuantity , String category){
+        String sql = "UPDATE products SET quantity = ? WHERE product_name = ? AND  category = ?";
+
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            // set the corresponding param
+            pstmt.setInt(1, newQuantity);
+            pstmt.setString(2, product);
+            pstmt.setString(3,category);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        getAllData();
+        getWantedProducts();
+        getAllCategories();
+        getAllSalesData();
     }
 
     public static void insertNewCategory(String category){
@@ -292,7 +318,6 @@ public class DatabaseHelper {
 
     public static void getAllSalesData(){
         String sql = "SELECT * FROM soldProducts";
-        System.out.println(sql);
         databaseOperations.salesData.clear();
         try{
             Connection conn;
@@ -313,6 +338,7 @@ public class DatabaseHelper {
                 p.setSellingDate(rs.getString("selling_date"));
                 p.setCategory(rs.getString("category"));
                 p.setSoldPrice(rs.getDouble("price")/rs.getInt("quantity"));
+                System.out.println(p.toString());
                 databaseOperations.salesData.add(p);
             }
         } catch (SQLException e) {
@@ -402,5 +428,6 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
+
 
 }

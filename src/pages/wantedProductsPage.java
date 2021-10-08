@@ -3,6 +3,8 @@ package pages;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import Database.*;
+import classes.Product;
 
 public class wantedProductsPage extends JPanel {
 
@@ -16,13 +18,22 @@ public class wantedProductsPage extends JPanel {
     JButton previousBtn = new JButton("<-");
     JTextField pageNumberTF = new JTextField();
 
-    int currentPageNumber = 1, numberOfPages = 1;
+    int currentPageNumber = 1, numberOfPages;
+    int length, numOfRows = 0;
 
     public wantedProductsPage(){
 
+        DatabaseHelper.getWantedProducts();
 
-        buttonsAction();
+        length = databaseOperations.wantedProducts.toArray().length;
+        numberOfPages = length / 10;
+        if(length%10 != 0){
+            numberOfPages++;
+        }
+
         mainDesign();
+        buttonsAction();
+        dataTable(currentPageNumber);
         frameSettings();
 
     }
@@ -32,6 +43,76 @@ public class wantedProductsPage extends JPanel {
             new Menu();
             frame.dispose();
         });
+
+        nextBtn.addActionListener((ActionEvent ae) -> {
+            nextPageOfData();
+        });
+
+        previousBtn.addActionListener((ActionEvent ae) -> {
+             previousPageOfData();
+        });
+    }
+
+    private void dataTable(int currentPageNumber){
+
+        int productNumber = (currentPageNumber -1) *10 - 1;
+
+        if(length >= currentPageNumber*10){
+            numOfRows = 10;
+        }else{
+            numOfRows = length - (currentPageNumber - 1) * 10;
+        }
+
+        deleteData();
+        for(int i = 0; i < numOfRows;i++){
+            productNumber++;
+            for(int j = 0; j < 3;j++) {
+
+                    switch (j) {
+                        case 0 -> wantedProductsArr[i][j].setText(String.valueOf(databaseOperations.wantedProducts.get(productNumber).getQuantity()));
+                        case 1 -> wantedProductsArr[i][j].setText(databaseOperations.wantedProducts.get(productNumber).getName().length() > 9 ?
+                                databaseOperations.wantedProducts.get(productNumber).getName().substring(0,9).concat("...") :
+                                databaseOperations.wantedProducts.get(productNumber).getName());
+                        case 2 -> wantedProductsArr[i][j].setText(String.valueOf(databaseOperations.wantedProducts.get(productNumber).getCategory()));
+                    }
+
+            }
+
+        }
+
+
+    }
+
+    private void deleteData(){      //when its less than 10 rows
+        for(int i = 0; i < 10;i++){
+            for(int j = 0; j < 3;j++) {
+                switch (j) {
+                    case 0 -> wantedProductsArr[i][j].setText(" _ ");
+                    case 1, 2 -> wantedProductsArr[i][j].setText("");
+                }
+            }
+
+        }
+    }
+
+    private void nextPageOfData(){
+
+        if(currentPageNumber < numberOfPages){
+            currentPageNumber++;
+            pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
+        }
+
+        dataTable(currentPageNumber);
+
+    }
+
+    private void previousPageOfData(){
+        if(currentPageNumber > 1){
+            currentPageNumber--;
+            pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
+        }
+        dataTable(currentPageNumber);
+
     }
 
     private void mainDesign(){
@@ -59,7 +140,7 @@ public class wantedProductsPage extends JPanel {
         for(int i = 0; i < 4; i++) {
             switch (i) {
                 case 0 -> {
-                    headFields[i] = new JTextField("CHECK");
+                    headFields[i] = new JTextField("");
                     headFields[i].setBounds(0, 0, 91, 50);
                 }
                 case 1 -> {
@@ -115,13 +196,22 @@ public class wantedProductsPage extends JPanel {
                 wantedProductsArr[i][j].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
+                            if(x < databaseOperations.wantedProducts.toArray().length){
+                            String proName = wantedProductsArr[x][1].getText();
+                            String proCategory = wantedProductsArr[x][2].getText();
+                            int oldQuantity = Integer.parseInt(wantedProductsArr[x][0].getText());
+                            int recordNumber = x;
 
-                        String proName = wantedProductsArr[x][1].getText();
-
-                        if(y == 3){
-                            System.out.println("UPDATE");
-                        }else if(y == 4){
-                            System.out.println("DELETE");
+                            if (y == 3) {
+                                new increaseInQuantityFrame(proName, proCategory, oldQuantity, recordNumber);
+                                frame.dispose();
+                            } else if (y == 4) {
+                                new ConfirmPopUp();
+                                wantedProductsArr[x][0].setText(" _ ");
+                                wantedProductsArr[x][1].setText("");
+                                wantedProductsArr[x][2].setText("");
+                                DatabaseHelper.deleteData(proName,proCategory);
+                            }
                         }
                     }
                 });
