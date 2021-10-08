@@ -2,6 +2,7 @@ package pages;
 
 import Database.*;
 import classes.Product;
+import com.itextpdf.text.BadElementException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,6 +32,8 @@ public class showProductsPage extends JPanel{
     JTextField pageNumberTF = new JTextField();
     JComboBox<String> catList = new JComboBox<>();
     JButton filterBtn = new JButton("Filter");
+
+    JButton exportBtn = new JButton("Export");
 
 
     public showProductsPage(double xFrame, double yFrame){
@@ -88,7 +91,7 @@ public class showProductsPage extends JPanel{
             productNumber++;
             for(int j = 0; j < 6;j++) {
 
-                if(databaseOperations.data.get(productNumber).getQuantity() != 0) {
+                if(databaseOperations.data.get(productNumber).getQuantity() >= 0) {
                     switch (j) {
                         case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName().length() > 9 ? databaseOperations.data.get(productNumber).getName().substring(0,9).concat("...") : databaseOperations.data.get(productNumber).getName());
                         case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
@@ -138,7 +141,7 @@ public class showProductsPage extends JPanel{
 
         catList.setBounds(470,572,150,20);
         filterBtn.setBounds(640,572,75,20);
-
+        exportBtn.setBounds(120,572,75,20);
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
         previousBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
@@ -198,6 +201,13 @@ public class showProductsPage extends JPanel{
         previousBtn.addActionListener((ActionEvent ae)-> previousPageOfData());
 
         filterBtn.addActionListener((ActionEvent ae)-> dataFiltration(Objects.requireNonNull(catList.getSelectedItem()).toString()));
+        exportBtn.addActionListener((ActionEvent ae)-> {
+            try {
+                DatabaseHelper.exportAllProducts();
+            } catch (BadElementException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void dataFiltration(String catName){
@@ -282,6 +292,7 @@ public class showProductsPage extends JPanel{
         }
         frame.add(catList);
         frame.add(filterBtn);
+        frame.add(exportBtn);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

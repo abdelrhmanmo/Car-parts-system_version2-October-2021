@@ -2,12 +2,16 @@ package Database;
 
 
 import classes.Product;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 
+import java.io.FileOutputStream;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DatabaseHelper {
 
@@ -36,8 +40,9 @@ public class DatabaseHelper {
     private static void createTables(){
 
         String table3 = "CREATE TABLE categories (category TEXT PRIMARY KEY)";
-        String table1 = "CREATE TABLE products (product_name TEXT, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL, category REFERENCES categories(category), PRIMARY KEY(product_name,category))";
-        String table2 = "CREATE TABLE soldProducts (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL, category TEXT NOT NULL)";
+        String table1 = "CREATE TABLE products (product_name TEXT, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL, category REFERENCES categories(category),wanted BOOLEAN NOT NULL, PRIMARY KEY(product_name,category))";
+        String table2 = "CREATE TABLE soldProducts (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL, category TEXT NOT NULL , returns BOOLEAN NOT NULL)";
+        String table4 = "CREATE TABLE Returns (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL, category TEXT NOT NULL)";
         try {
             Connection conn;
             // db parameters
@@ -49,6 +54,7 @@ public class DatabaseHelper {
             stmt.execute(table3);
             stmt.execute(table1);
             stmt.execute(table2);
+            stmt.execute(table4);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -103,6 +109,8 @@ public class DatabaseHelper {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+            Collections.reverse(databaseOperations.data);
     }
     public static void deleteData(String productName , String category){
         String sql = "DELETE FROM products WHERE product_name = ? AND category = ?";
@@ -313,6 +321,7 @@ public class DatabaseHelper {
         } catch (SQLException | ParseException e) {
             System.out.println(e.getMessage());
         }
+        Collections.reverse(databaseOperations.listOfProductsOfASpecificCategory);
         return databaseOperations.listOfProductsOfASpecificCategory;
     }
 
@@ -344,6 +353,7 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        Collections.reverse(databaseOperations.salesData);
     }
     public static void getSpecificDateSalesData(String date){
         String sql = "SELECT * FROM soldProducts WHERE selling_date LIKE '%"+date+"%'";
@@ -373,6 +383,7 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        Collections.reverse(databaseOperations.salesData);
     }
 
     public static void deleteCategory(String category){
@@ -427,6 +438,141 @@ public class DatabaseHelper {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+    private static void addMetaData(Document document) {
+        document.addTitle("ALL PRODUCTS IN THE SYSTEM");
+        document.addSubject("Using iText - PDF - LIB");
+        document.addKeywords("Java, PDF, iText");
+        document.addAuthor("KENZ - System");
+        document.addCreator("KENZ - System");
+    }
+
+    public static void exportAllProducts()
+            throws BadElementException {
+
+        String file = "Data/AllProducts.pdf";
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+            BaseFont bf = BaseFont.createFont("c:/Amiri-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font font = new Font(bf, 12);
+            addMetaData(document);
+
+            document.open();
+
+            PdfPTable table = new PdfPTable(5);
+
+
+            PdfPCell c1 = new PdfPCell(new Paragraph("م",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الصنف",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الكمية",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("السعر",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الجملة",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            table.setHeaderRows(1);
+
+            int counter = 0;
+            for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
+
+                c1 = new PdfPCell(new Phrase("---",font));
+                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c1.setBackgroundColor(BaseColor.RED);
+                c1.setPadding(10);
+                table.addCell(c1);
+                table.addCell(c1);
+                c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
+                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c1.setBackgroundColor(BaseColor.RED);
+                c1.setPadding(10);
+                c1.setArabicOptions(1);
+                c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                table.addCell(c1);
+                c1 = new PdfPCell(new Phrase("---",font));
+                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c1.setPadding(10);
+                c1.setBackgroundColor(BaseColor.RED);
+                table.addCell(c1);
+                table.addCell(c1);
+
+                for(int j = 0 ; j < databaseOperations.data.toArray().length;j++){
+                    counter++;
+                    if(databaseOperations.data.get(j).getCategory().equals(databaseOperations.allCategories.get(i))){
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(counter)));
+                        c1.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+
+                        Phrase phrase = new Phrase();
+                        Chunk c = new Chunk(databaseOperations.data.get(j).getName(),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.YELLOW);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.data.get(j).getQuantity())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.data.get(j).getBuyPrice())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.data.get(j).getSoldPrice())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+                    }
+                }
+            }
+            document.add(table);
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
