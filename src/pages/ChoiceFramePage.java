@@ -9,7 +9,7 @@ import java.awt.*;
 public class ChoiceFramePage extends JPanel {
 
     int productNumber;
-    String sProductName;
+    String sProductName, category;
 
     JFrame frame = new JFrame();
     JButton updateProductData = new JButton("Update Product Data"),
@@ -17,8 +17,11 @@ public class ChoiceFramePage extends JPanel {
             cancel = new JButton("Cancel");
     JLabel productName = new JLabel();
 
-    public ChoiceFramePage(int productNumber){
-        this.productNumber = productNumber;
+    public ChoiceFramePage(String sProductName,  String category){
+
+        this.sProductName = sProductName;
+        this.category = category;
+        productNumber = databaseOperations.search(sProductName,category);
         buttonsActions();
         Design();
         frameSettings();
