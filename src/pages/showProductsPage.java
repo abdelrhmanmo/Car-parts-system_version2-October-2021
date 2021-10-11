@@ -63,12 +63,12 @@ public class showProductsPage extends JPanel{
                 //Fonts
                 productsArr[i][j].setFont(labelFont);
                 switch (j) {
-                    case 0 -> productsArr[i][j].setBounds(0, 51 * (i + 1), 149, 48);
-                    case 1 -> productsArr[i][j].setBounds(150, 51 * (i + 1), 92, 48);
-                    case 2 -> productsArr[i][j].setBounds(240, 51 * (i + 1), 92, 48);
-                    case 3 -> productsArr[i][j].setBounds(330, 51 * (i + 1), 92, 48);
-                    case 4 -> productsArr[i][j].setBounds(420, 51 * (i + 1), 165, 48);
-                    case 5 -> productsArr[i][j].setBounds(585, 51 * (i + 1), 160, 48);
+                    case 0 -> productsArr[i][j].setBounds(0, 51 * (i + 1), 149 + 300, 48);
+                    case 1 -> productsArr[i][j].setBounds(150 + 300, 51 * (i + 1), 92, 48);
+                    case 2 -> productsArr[i][j].setBounds(240+ 300, 51 * (i + 1), 92, 48);
+                    case 3 -> productsArr[i][j].setBounds(330 + 300, 51 * (i + 1), 92, 48);
+                    case 4 -> productsArr[i][j].setBounds(420 + 300, 51 * (i + 1), 165, 48);
+                    case 5 -> productsArr[i][j].setBounds(585 + 300, 51 * (i + 1), 160, 48);
                 }
 
             }
@@ -93,7 +93,7 @@ public class showProductsPage extends JPanel{
 
                 if(databaseOperations.data.get(productNumber).getQuantity() >= 0) {
                     switch (j) {
-                        case 0 -> productsArr[i][j].setText(databaseOperations.data.get(productNumber).getName().length() > 9 ? databaseOperations.data.get(productNumber).getName().substring(0,9).concat("...") : databaseOperations.data.get(productNumber).getName());
+                        case 0 -> productsArr[i][j].setText(/*databaseOperations.data.get(productNumber).getName().length() > 50 ? databaseOperations.data.get(productNumber).getName().substring(0,9).concat("...") :*/ databaseOperations.data.get(productNumber).getName());
                         case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
                         case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
                         case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
@@ -108,6 +108,7 @@ public class showProductsPage extends JPanel{
                     public void mouseClicked(MouseEvent e) {
 
                         if(!productsArr[x][y].getText().equals("")) {
+                            System.out.println("BYE");
                             frame.dispose();
                             System.out.println(x + "" + y);
                             new ChoiceFramePage(productsArr[x][0].getText(),productsArr[x][5].getText());
@@ -132,15 +133,15 @@ public class showProductsPage extends JPanel{
     private void Design(){
 
         backBtn.setBounds(30,572,80,20);
-        nextBtn.setBounds(355,572,50,20);
-        previousBtn.setBounds(255,572,50,20);
-        pageNumberTF.setBounds(310,572,40,20);
+        nextBtn.setBounds(355 + 200,572,50,20);
+        previousBtn.setBounds(255 + 200,572,50,20);
+        pageNumberTF.setBounds(310 + 200,572,40,20);
         pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
         pageNumberTF.setEditable(false);
         pageNumberTF.setHorizontalAlignment(0);
 
-        catList.setBounds(470,572,150,20);
-        filterBtn.setBounds(640,572,75,20);
+        catList.setBounds(470 + 300,572,150,20);
+        filterBtn.setBounds(640 + 300,572,75,20);
         exportBtn.setBounds(120,572,75,20);
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
@@ -151,27 +152,27 @@ public class showProductsPage extends JPanel{
             switch (i) {
                 case 0 -> {
                     headsTF[i] = new JTextField("Name");
-                    headsTF[i].setBounds(0, 0, 151, 50);
+                    headsTF[i].setBounds(0, 0, 151 + 300, 50);
                 }
                 case 1 -> {
                     headsTF[i] = new JTextField("Original Price");
-                    headsTF[i].setBounds(150, 0, 92, 50);
+                    headsTF[i].setBounds(150 + 300, 0, 92, 50);
                 }
                 case 2 -> {
                     headsTF[i] = new JTextField("Selling Price");
-                    headsTF[i].setBounds(240, 0, 92, 50);
+                    headsTF[i].setBounds(240 + 300, 0, 92, 50);
                 }
                 case 3 -> {
                     headsTF[i] = new JTextField("Quantity");
-                    headsTF[i].setBounds(330, 0, 92, 50);
+                    headsTF[i].setBounds(330 + 300, 0, 92, 50);
                 }
                 case 4 -> {
                     headsTF[i] = new JTextField("Date");
-                    headsTF[i].setBounds(420, 0, 165, 50);
+                    headsTF[i].setBounds(420 + 300, 0, 165, 50);
                 }
                 case 5 -> {
                     headsTF[i] = new JTextField("Category");
-                    headsTF[i].setBounds(585, 0, 160, 50);
+                    headsTF[i].setBounds(585 + 300, 0, 160, 50);
                 }
             }
             headsTF[i].setBackground(Color.gray);
@@ -188,7 +189,7 @@ public class showProductsPage extends JPanel{
         //Puts all cats name in ComboBox
         catListData();
 
-        //Fonts
+        exportBtn.setForeground(Color.BLUE);
 
     }
 
@@ -224,7 +225,7 @@ public class showProductsPage extends JPanel{
         for(int i = 0; i < productsArray.toArray().length; i++){
             for(int j = 0; j < 6; j++){
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(productsArray.get(i).getName().length() > 9 ? productsArray.get(i).getName().substring(0,9).concat("...") : productsArray.get(i).getName());
+                    case 0 -> productsArr[i][j].setText(/*productsArray.get(i).getName().length() > 9 ? productsArray.get(i).getName().substring(0,9).concat("...") :*/ productsArray.get(i).getName());
                     case 1 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getBuyPrice()));
                     case 2 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getSoldPrice()));
                     case 3 -> productsArr[i][j].setText(String.valueOf(productsArray.get(i).getQuantity()));
@@ -297,7 +298,7 @@ public class showProductsPage extends JPanel{
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Products Page");
-        frame.setSize(760,650);
+        frame.setSize(1060,650);
         int xLocate = (int) xFrame, yLocate = (int) yFrame;
         frame.setLocation(xLocate,yLocate);  //400   60
         frame.setVisible(true);
