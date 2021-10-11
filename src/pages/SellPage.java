@@ -20,13 +20,15 @@ public class SellPage extends JPanel {
     JTextField searchField = new JTextField();
     JButton aboutBtn = new JButton("About");
 
+    JButton specialPriceBtn = new JButton("Special Price");
+
     JButton backBtn = new JButton("Back");
 
     JLabel originalPriceLbl = new JLabel("-   Original Price : ");
     JLabel originalPriceValueLbl = new JLabel("00");
 
     JLabel sellingPriceLbl = new JLabel("-   Selling Price : ");
-    JLabel sellingPriceValueLbl = new JLabel("00");
+    JTextField sellingPriceValueLbl = new JTextField("00");
 
     JLabel quantityLbl = new JLabel("-   Quantity : ");
     JLabel quantityValueLbl = new JLabel("00");
@@ -99,6 +101,10 @@ public class SellPage extends JPanel {
             }
         });
 
+        specialPriceBtn.addActionListener((ActionEvent ae) ->{
+            sellingPriceValueLbl.setEditable(true);
+        });
+
         backBtn.addActionListener((ActionEvent ae)->{
             new Menu();
             frame.dispose();
@@ -117,7 +123,10 @@ public class SellPage extends JPanel {
         originalPriceValueLbl.setBounds(190,150,50,15);
 
         sellingPriceLbl.setBounds(45,190,120,15);
-        sellingPriceValueLbl.setBounds(190,190,50,15);
+        sellingPriceValueLbl.setBounds(180,190,60,25);
+        sellingPriceValueLbl.setEditable(false);
+
+        specialPriceBtn.setBounds(260,188,140,20);
 
         quantityLbl.setBounds(45,230,120,15);
         quantityValueLbl.setBounds(190,230,50,15);
@@ -178,6 +187,7 @@ public class SellPage extends JPanel {
         frame.add(LE);
         frame.add(submitBtn);
         frame.add(soldLbl);
+        frame.add(specialPriceBtn);
         frame.add(backBtn);
         frame.add(pane);
         frame.add(this);
@@ -252,7 +262,7 @@ public class SellPage extends JPanel {
             String howManyStr = howManyValueTextField.getText();
             if (Integer.parseInt(howManyStr) <= databaseOperations.data.get(productNumber).getQuantity()) {
                 total = Integer.parseInt(howManyStr) *
-                        databaseOperations.data.get(productNumber).getSoldPrice();
+                        Integer.parseInt(sellingPriceValueLbl.getText());
                 totalValueLbl.setText(String.valueOf(total));
                 pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
 
