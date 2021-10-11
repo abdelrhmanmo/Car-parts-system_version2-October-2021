@@ -33,7 +33,7 @@ public class Menu extends JPanel {
             frame.dispose();
         });
         showBtn.addActionListener((ActionEvent ae) ->{
-            new showProductsPage(400,60);
+            new showProductsPage(200,60);
             frame.dispose();
         });
         updateBtn.addActionListener((ActionEvent ae) ->{
