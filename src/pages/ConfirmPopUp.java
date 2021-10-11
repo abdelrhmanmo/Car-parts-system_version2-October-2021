@@ -36,6 +36,35 @@ public class ConfirmPopUp {
         }
     }
 
+    public ConfirmPopUp(JFrame parent , String day , int number){
+        switch (number) {
+            case 1 -> {
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to Export Sales PDF For this " + day + " date ?", "Confirm",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.NO_OPTION) {
+                    System.out.println("No button clicked");
+                } else if (result == JOptionPane.YES_OPTION) {
+                    System.out.println("Yes button clicked");
+                } else if (result == JOptionPane.CLOSED_OPTION) {
+                    System.out.println("JOptionPane closed");
+                }
+            }
+            case 2 -> {
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to Export Sales PDF For All Sales That Happen in the system ?", "Confirm",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.NO_OPTION) {
+                    System.out.println("No button clicked");
+                } else if (result == JOptionPane.YES_OPTION) {
+                    System.out.println("Yes button clicked");
+                } else if (result == JOptionPane.CLOSED_OPTION) {
+                    System.out.println("JOptionPane closed");
+                }
+            }
+        }
+    }
+
     public ConfirmPopUp(JFrame frame) {
 
         productName = "";

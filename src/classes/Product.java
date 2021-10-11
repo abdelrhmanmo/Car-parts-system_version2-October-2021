@@ -14,7 +14,11 @@ public class Product {
     String sellingDate;// date of the process /*ده عشان يسادعنا نخزن التواريخ اللي اتباعت فيها المنتجات وهتلاقيني حدثت الداتا كمان راجع عليها برضه*/
     private static final DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); // format () // ده فورمات بس لشكل التاريخ انا خليته يطبعها فا ابقا شوف شكل التاريخ في الكونسول
     double totalPrice;
-    public Product(String name , double soldPrice , double buyPrice , int quantity , Date addingToSystemDate,String category){
+    int minimumQuantity;
+    boolean wanted;
+    boolean returns;
+
+    public Product(String name , double soldPrice , double buyPrice , int quantity , Date addingToSystemDate,String category,int minimumQuantity,boolean wanted){
         this.name = name;
         this.soldPrice = soldPrice;
         this.buyPrice = buyPrice;
@@ -22,6 +26,8 @@ public class Product {
         this.addingToSystemDate = formatter.format(addingToSystemDate);
         this.sellingDate = "";
         this.category = category;
+        this.minimumQuantity = minimumQuantity;
+        this.wanted = wanted;
     }
 
     public Product(){
@@ -33,11 +39,35 @@ public class Product {
         this.sellingDate = "";
         this.category = "";
         this.totalPrice=0.0;
+        this.minimumQuantity = 0;
+        this.wanted = false;
     }
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
+
+    public void setMinimumQuantity(int minimumQuantity) {
+        this.minimumQuantity = minimumQuantity;
+    }
+
+    public void setReturns(boolean returns) {
+        this.returns = returns;
+    }
+
+    public boolean isReturns() {
+        return returns;
+    }
+
+    public void setWanted(boolean wanted) {
+        this.wanted = wanted;
+    }
+
+
+    public boolean isWanted() {
+        return wanted;
+    }
+
 
     public double getTotalPrice() {
         return totalPrice;
@@ -98,6 +128,12 @@ public class Product {
     public String getCategory() {
         return category;
     }
+
+    public int getMinimumQuantity() {
+        return minimumQuantity;
+    }
+
+
 
     @Override
     public String toString() {

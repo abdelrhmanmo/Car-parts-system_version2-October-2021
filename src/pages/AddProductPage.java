@@ -279,7 +279,9 @@ public class AddProductPage extends JPanel{
                             Double.parseDouble(buyingPrice.getText()),
                             Integer.parseInt(quantity.getText()),
                             new Date(),
-                            (String) list.getModel().getElementAt(list.getSelectedIndex())
+                            (String) list.getModel().getElementAt(list.getSelectedIndex()),
+                            2,
+                            false
                     )
             );
         }

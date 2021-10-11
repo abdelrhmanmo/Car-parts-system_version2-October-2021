@@ -40,7 +40,7 @@ public class DatabaseHelper {
     private static void createTables(){
 
         String table3 = "CREATE TABLE categories (category TEXT PRIMARY KEY)";
-        String table1 = "CREATE TABLE products (product_name TEXT, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL, category REFERENCES categories(category),wanted BOOLEAN NOT NULL, PRIMARY KEY(product_name,category))";
+        String table1 = "CREATE TABLE products (product_name TEXT, sold_price DOUBLE NOT NULL,buy_price DOUBLE NOT NULL,quantity INTEGER NOT NULL, adding_product_date TEXT NOT NULL, category REFERENCES categories(category),wanted BOOLEAN NOT NULL,minimum_quantity INTEGER NOT NULL, PRIMARY KEY(product_name,category))";
         String table2 = "CREATE TABLE soldProducts (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL, category TEXT NOT NULL , returns BOOLEAN NOT NULL)";
         String table4 = "CREATE TABLE Returns (product_name REFERENCES products(product_name), price DOUBLE NOT NULL,quantity integer NOT NULL, selling_date TEXT NOT NULL, category TEXT NOT NULL)";
         try {
@@ -61,7 +61,7 @@ public class DatabaseHelper {
     }
 
     public static String insertData(Product product){
-        String sql = "INSERT INTO products(product_name,sold_price,buy_price,quantity,adding_product_date,category) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO products(product_name,sold_price,buy_price,quantity,adding_product_date,category,minimum_quantity,wanted) VALUES(?,?,?,?,?,?,?,?)";
 
         try  {
             Connection conn;
@@ -75,6 +75,8 @@ public class DatabaseHelper {
             pstmt.setDouble(4, product.getQuantity());
             pstmt.setString(5, product.getAddingToSystemDate());
             pstmt.setString(6, product.getCategory());
+            pstmt.setInt(7, product.getMinimumQuantity());
+            pstmt.setBoolean(8, product.isWanted());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -84,7 +86,7 @@ public class DatabaseHelper {
         return "Inserted Successfully!";
     }
     public static void getAllData(){
-            String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products WHERE quantity >= 0";
+            String sql = "SELECT * FROM products WHERE quantity >= 0";
             databaseOperations.data.clear();
             try{
                 Connection conn;
@@ -97,11 +99,11 @@ public class DatabaseHelper {
                 while (rs.next()) {
                     System.out.println(rs.getString("product_name") +  "\t" +
                             rs.getDouble("sold_price") + "\t" +rs.getDouble("buy_price")+"\t" +
-                            rs.getInt("quantity") + "\t" +rs.getString("adding_product_date") + "\t"+rs.getString("category"));
+                            rs.getInt("quantity") + "\t" +rs.getString("adding_product_date") + "\t"+rs.getString("category")+ "\t"+rs.getString("minimum_quantity")+ "\t"+rs.getString("wanted"));
 
                     /*This is how we can add data and use it in the system*/
                     DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                    Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"));
+                    Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"),rs.getInt("minimum_quantity"),rs.getBoolean("wanted"));
                     databaseOperations.data.add(p);
                 }
             } catch (SQLException e) {
@@ -248,8 +250,8 @@ public class DatabaseHelper {
         getAllCategories();
     }
 
-    public static void insertSoldProductDetails(String productName , int quantity , String date, double price , String category){
-        String sql = "INSERT INTO soldProducts(product_name,price,quantity,selling_date,category) VALUES(?,?,?,?,?)";
+    public static void insertSoldProductDetails(String productName , int quantity , String date, double price , String category,boolean returns){
+        String sql = "INSERT INTO soldProducts(product_name,price,quantity,selling_date,category,returns) VALUES(?,?,?,?,?,?)";
 
         try  {
             Connection conn;
@@ -262,6 +264,7 @@ public class DatabaseHelper {
             pstmt.setInt(3, quantity);
             pstmt.setString(4, date);
             pstmt.setString(5,category);
+            pstmt.setBoolean(6,returns);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -314,7 +317,7 @@ public class DatabaseHelper {
             // loop through the result set
             while (rs.next()) {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"));
+                Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"),rs.getInt("minimum_quantity"),rs.getBoolean("wanted"));
                 databaseOperations.listOfProductsOfASpecificCategory.add(p);
                 System.out.println(p.getName());
             }
@@ -347,6 +350,7 @@ public class DatabaseHelper {
                 p.setSellingDate(rs.getString("selling_date"));
                 p.setCategory(rs.getString("category"));
                 p.setSoldPrice(rs.getDouble("price")/rs.getInt("quantity"));
+                p.setReturns(rs.getInt("returns")==1);
                 System.out.println(p.toString());
                 databaseOperations.salesData.add(p);
             }
@@ -378,6 +382,7 @@ public class DatabaseHelper {
                 p.setSellingDate(rs.getString("selling_date"));
                 p.setCategory(rs.getString("category"));
                 p.setSoldPrice(rs.getDouble("price")/rs.getInt("quantity"));
+                p.setReturns(rs.getInt("returns")==1);
                 databaseOperations.salesData.add(p);
             }
         } catch (SQLException e) {
@@ -413,7 +418,7 @@ public class DatabaseHelper {
     }
 
     public static void getWantedProducts(){
-        String sql = "SELECT product_name,sold_price,buy_price,quantity,adding_product_date,category FROM products WHERE quantity <= 5";
+        String sql = "SELECT * FROM products WHERE wanted = 1";
         databaseOperations.wantedProducts.clear();
         try{
             Connection conn;
@@ -430,7 +435,7 @@ public class DatabaseHelper {
 
                 /*This is how we can add data and use it in the system*/
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"));
+                Product p = new Product(rs.getString("product_name"),rs.getDouble("sold_price"),rs.getDouble("buy_price"),rs.getInt("quantity"),formatter.parse(rs.getString("adding_product_date")),rs.getString("category"),rs.getInt("minimum_quantity"),rs.getBoolean("wanted"));
                 databaseOperations.wantedProducts.add(p);
             }
         } catch (SQLException e) {
@@ -575,5 +580,158 @@ public class DatabaseHelper {
 
     }
 
+
+    public static void exportAllSalesData() {
+
+        String file = "Data/AllSalesData.pdf";
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+            BaseFont bf = BaseFont.createFont("c:/Amiri-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font font = new Font(bf, 12);
+            addMetaData(document);
+            document.setMargins(0,0,10,1);
+
+            document.open();
+
+            PdfPTable table = new PdfPTable(6);
+
+
+            PdfPCell c1 = new PdfPCell(new Paragraph("م",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الصنف",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الكمية المباعة",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("سعر عمليه البيع",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("تاريخ البيع",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("آجل",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            table.setHeaderRows(1);
+
+            int counter = 0;
+            for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
+
+                c1 = new PdfPCell(new Phrase("---",font));
+                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c1.setBackgroundColor(BaseColor.RED);
+                c1.setPadding(10);
+                table.addCell(c1);
+                table.addCell(c1);
+                c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
+                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c1.setBackgroundColor(BaseColor.RED);
+                c1.setPadding(10);
+                c1.setArabicOptions(1);
+                c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                table.addCell(c1);
+                c1 = new PdfPCell(new Phrase("---",font));
+                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c1.setPadding(10);
+                c1.setBackgroundColor(BaseColor.RED);
+                table.addCell(c1);
+                table.addCell(c1);
+                table.addCell(c1);
+
+                for(int j = 0 ; j < databaseOperations.data.toArray().length;j++){
+                    counter++;
+                    if(databaseOperations.salesData.get(j).getCategory().equals(databaseOperations.allCategories.get(i))){
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(counter)));
+                        c1.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+
+                        Phrase phrase = new Phrase();
+                        Chunk c = new Chunk(String.valueOf(databaseOperations.salesData.get(j).getName()),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setExtraParagraphSpace(30);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.salesData.get(j).getQuantity())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.salesData.get(j).getTotalPrice())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        phrase = new Phrase();
+                        c = new Chunk(String.valueOf(databaseOperations.salesData.get(j).getSellingDate()),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setExtraParagraphSpace(30);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        phrase = new Phrase();
+                        c = new Chunk((databaseOperations.salesData.get(j).isReturns() ? "نعم":"لا"),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                    }
+                }
+            }
+            document.add(table);
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

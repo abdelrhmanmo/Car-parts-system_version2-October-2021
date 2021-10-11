@@ -2,6 +2,7 @@ package pages;
 
 
 import Database.*;
+import com.itextpdf.text.BadElementException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +35,7 @@ public class SalesReport extends JPanel {
     JTextField pageNumberTF = new JTextField();
     JComboBox<String> dateList = new JComboBox<>();
     JButton filterBtn = new JButton("Search");
-
+    JButton exportBtn = new JButton("Export");
 
     public SalesReport(){
         length = databaseOperations.salesData.toArray().length;
@@ -145,6 +146,7 @@ public class SalesReport extends JPanel {
 
         dateList.setBounds(470,572,150,20);
         filterBtn.setBounds(640,572,90,20);
+        exportBtn.setBounds(120,572,75,20);
 
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
@@ -205,6 +207,15 @@ public class SalesReport extends JPanel {
         previousBtn.addActionListener((ActionEvent ae)-> previousPageOfData());
 
         filterBtn.addActionListener((ActionEvent ae)-> dataFiltration(Objects.requireNonNull(dateList.getSelectedItem()).toString()));
+        exportBtn.addActionListener((ActionEvent ae)-> {
+            try {
+                exportProcess(Objects.requireNonNull(dateList.getSelectedItem()).toString());
+            } catch (BadElementException e) {
+                e.printStackTrace();
+            }
+        });
+
+
     }
 
     private void dataFiltration(String catName){
@@ -230,6 +241,22 @@ public class SalesReport extends JPanel {
             }
         }
 
+    }
+
+    private void exportProcess(String catName) throws BadElementException {
+        switch (catName) {
+            case "All" -> {
+                if (new ConfirmPopUp(frame, " ", 2).getResult() == 0) {
+                    DatabaseHelper.getAllSalesData();
+                    DatabaseHelper.exportAllSalesData();
+                } else {
+                    System.out.println("Canceld");
+                }
+            }
+            case "Today"->DatabaseHelper.getSpecificDateSalesData(getTodayDateString());
+            case "Yesterday"->DatabaseHelper.getSpecificDateSalesData(getYesterdayDateString());
+            case "Before Yesterday"->DatabaseHelper.getSpecificDateSalesData(getBeforeYesterdayDateString());
+        }
     }
 
     private void nextPageOfData(){
@@ -275,6 +302,7 @@ public class SalesReport extends JPanel {
         }
         frame.add(dateList);
         frame.add(filterBtn);
+        frame.add(exportBtn);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -264,7 +264,7 @@ public class SellPage extends JPanel {
                     DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber ,
                             (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr)),(String)list.getModel().getElementAt(list.getSelectedIndex()));
 
-                    DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex()));
+                    DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex()),false);
 
                     //Empty Fields
                     quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
