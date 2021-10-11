@@ -45,7 +45,6 @@ public class ChoiceFramePage extends JPanel {
     }
     private void Design(){
 
-        this.sProductName = databaseOperations.data.get(productNumber).getName();
         productName.setText("Product name: "+sProductName);
         productName.setForeground(Color.BLACK);
         productName.setBounds(130,20,750,35);
