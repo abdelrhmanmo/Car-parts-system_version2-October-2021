@@ -64,12 +64,12 @@ public class SalesReport extends JPanel {
                 //Fonts
                 productsArr[i][j].setFont(labelFont);
                 switch (j) {
-                    case 0 -> productsArr[i][j].setBounds(0, 51 * (i + 1), 149, 48);
-                    case 1 -> productsArr[i][j].setBounds(150, 51 * (i + 1), 92, 48);
-                    case 2 -> productsArr[i][j].setBounds(240, 51 * (i + 1), 92, 48);
-                    case 3 -> productsArr[i][j].setBounds(330, 51 * (i + 1), 92, 48);
-                    case 4 -> productsArr[i][j].setBounds(420, 51 * (i + 1), 165, 48);
-                    case 5 -> productsArr[i][j].setBounds(585, 51 * (i + 1), 160, 48);
+                    case 0 -> productsArr[i][j].setBounds(0, 51 * (i + 1), 149 + 300, 48);
+                    case 1 -> productsArr[i][j].setBounds(150 + 300, 51 * (i + 1), 92, 48);
+                    case 2 -> productsArr[i][j].setBounds(240 + 300, 51 * (i + 1), 92, 48);
+                    case 3 -> productsArr[i][j].setBounds(330 + 300, 51 * (i + 1), 92, 48);
+                    case 4 -> productsArr[i][j].setBounds(420 + 300, 51 * (i + 1), 165, 48);
+                    case 5 -> productsArr[i][j].setBounds(585 + 300, 51 * (i + 1), 160, 48);
                 }
 
             }
@@ -93,7 +93,7 @@ public class SalesReport extends JPanel {
             for(int j = 0; j < 6;j++) {
 
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(productNumber).getName().length()>9? databaseOperations.salesData.get(productNumber).getName().substring(0,9).concat("..."):databaseOperations.salesData.get(productNumber).getName());
+                    case 0 -> productsArr[i][j].setText(/*databaseOperations.salesData.get(productNumber).getName().length()>9? databaseOperations.salesData.get(productNumber).getName().substring(0,9).concat("..."):*/databaseOperations.salesData.get(productNumber).getName());
                     case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getQuantity()));
                     case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getSoldPrice()));
                     case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getTotalPrice()));
@@ -102,7 +102,7 @@ public class SalesReport extends JPanel {
                 }
                 int x = i, y = j;
                 int finalProductNumber = productNumber;
-                productsArr[i][j].addMouseListener(new MouseAdapter() {
+                /*productsArr[i][j].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
 
@@ -117,7 +117,7 @@ public class SalesReport extends JPanel {
                             }
                         }
                     }
-                });
+                });*/
             }
 
         }
@@ -136,48 +136,48 @@ public class SalesReport extends JPanel {
 
     private void Design(){
 
-        backBtn.setBounds(30,572,80,20);
-        nextBtn.setBounds(355,572,50,20);
-        previousBtn.setBounds(255,572,50,20);
-        pageNumberTF.setBounds(310,572,40,20);
+        backBtn.setBounds(70,572,80,20);
+        nextBtn.setBounds(355 + 150,572,50,20);
+        previousBtn.setBounds(255 + 150,572,50,20);
+        pageNumberTF.setBounds(310 + 150,572,40,20);
         pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
         pageNumberTF.setEditable(false);
         pageNumberTF.setHorizontalAlignment(0);
 
-        dateList.setBounds(470,572,150,20);
-        filterBtn.setBounds(640,572,90,20);
-        exportBtn.setBounds(120,572,75,20);
+        dateList.setBounds(470 + 200,572,150,20);
+        filterBtn.setBounds(640 + 250,572,90,20);
+        exportBtn.setBounds(180,572,75,20);
 
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
         previousBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
-        //backBtn.setForeground(Color.BLUE);
+        exportBtn.setForeground(Color.BLUE);
 
         for(int i = 0; i < 6; i++) {
             switch (i) {
                 case 0 -> {
                     headsTF[i] = new JTextField("Name");
-                    headsTF[i].setBounds(0, 0, 151, 50);
+                    headsTF[i].setBounds(0, 0, 151 + 300, 50);
                 }
                 case 1 -> {
                     headsTF[i] = new JTextField("Quantity");
-                    headsTF[i].setBounds(150, 0, 92, 50);
+                    headsTF[i].setBounds(150 + 300, 0, 92, 50);
                 }
                 case 2 -> {
                     headsTF[i] = new JTextField("Selling Price");
-                    headsTF[i].setBounds(240, 0, 92, 50);
+                    headsTF[i].setBounds(240 + 300, 0, 92, 50);
                 }
                 case 3 -> {
                     headsTF[i] = new JTextField("Price");
-                    headsTF[i].setBounds(330, 0, 92, 50);
+                    headsTF[i].setBounds(330 + 300, 0, 92, 50);
                 }
                 case 4 -> {
                     headsTF[i] = new JTextField("Selling Date");
-                    headsTF[i].setBounds(420, 0, 165, 50);
+                    headsTF[i].setBounds(420 + 300 , 0, 165, 50);
                 }
                 case 5 -> {
                     headsTF[i] = new JTextField("Category");
-                    headsTF[i].setBounds(585, 0, 160, 50);
+                    headsTF[i].setBounds(585 + 300, 0, 160, 50);
                 }
             }
             headsTF[i].setBackground(Color.gray);
@@ -231,7 +231,7 @@ public class SalesReport extends JPanel {
         for(int i = 0; i < databaseOperations.salesData.toArray().length; i++){
             for(int j = 0; j < 6; j++){
                 switch (j) {
-                    case 0 -> productsArr[i][j].setText(databaseOperations.salesData.get(i).getName().length()>9?databaseOperations.salesData.get(i).getName().substring(0,9).concat("..."):databaseOperations.salesData.get(i).getName());
+                    case 0 -> productsArr[i][j].setText(/*databaseOperations.salesData.get(i).getName().length()>9?databaseOperations.salesData.get(i).getName().substring(0,9).concat("..."):*/databaseOperations.salesData.get(i).getName());
                     case 1 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getQuantity()));
                     case 2 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getSoldPrice()));
                     case 3 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(i).getTotalPrice()));
@@ -307,27 +307,10 @@ public class SalesReport extends JPanel {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Sales Report");
-        frame.setSize(760,650);
+        frame.setSize(760 + 300,650);
         frame.setLocation(400,60);
         frame.setVisible(true);
         frame.setResizable(false);
-    }
-
-    public void paint(Graphics g){
-
-        for(int i = 1; i < 4; i++) {
-            switch (i){
-                case 1:
-                    g.drawLine(150, 0, 150, 550);
-                case 2:
-                    g.drawLine(240, 0, 240, 550);
-                case 3:
-                    g.drawLine(330, 0, 330, 550);
-                case 4:
-                    g.drawLine(420, 0, 420, 550);
-            }
-        }
-
     }
 
     private String getTodayDateString() {
