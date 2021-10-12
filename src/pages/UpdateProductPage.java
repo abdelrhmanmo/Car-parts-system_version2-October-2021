@@ -39,8 +39,8 @@ public class UpdateProductPage extends JPanel {
     JLabel quantityLbl = new JLabel("-   Quantity : ");
     JTextField quantityValueLbl = new JTextField();
 
-    JLabel dateLbl = new JLabel(" -     Date : ");
-    JLabel dateLblValue = new JLabel();
+    JLabel minQuantityLbl = new JLabel("-   Min-Quantity : ");
+    JTextField minQuantityValue = new JTextField();
 
 
     JButton updateBtn = new JButton("Update");
@@ -58,6 +58,7 @@ public class UpdateProductPage extends JPanel {
 
 
     JLabel msg = new JLabel();
+    String oldCategory;
 
 
     public UpdateProductPage(int productNumber){
@@ -97,8 +98,8 @@ public class UpdateProductPage extends JPanel {
         quantityLbl.setBounds(45,215,120,15);
         quantityValueLbl.setBounds(190,210,70,25);
 
-        dateLbl.setBounds(45,255,120,15);
-        dateLblValue.setBounds(172,250,160,25);
+        minQuantityLbl.setBounds(45,255,120,15);
+        minQuantityValue.setBounds(190,250,70,25);
 
 
         updateBtn.setBounds(175,330,100,35);
@@ -114,8 +115,8 @@ public class UpdateProductPage extends JPanel {
         originalPriceLbl.setFont(labelFont);
         sellingPriceLbl.setFont(labelFont);
         quantityLbl.setFont(labelFont);
-        dateLbl.setFont(labelFont);
-        dateLblValue.setFont(typingFont);
+        minQuantityLbl.setFont(labelFont);
+        minQuantityValue.setFont(typingFont);
         originalPriceValueLbl.setFont(labelFont);
 
         //Text Color
@@ -132,7 +133,7 @@ public class UpdateProductPage extends JPanel {
 
     private void buttonsAction(int productNumber){
         updateBtn.addActionListener((ActionEvent ae) ->{
-            if(sellingPriceValueLbl.getText().isEmpty() || originalPriceValueLbl.getText().isEmpty() || quantityValueLbl.getText().isEmpty()) {
+            if(sellingPriceValueLbl.getText().isEmpty() || originalPriceValueLbl.getText().isEmpty() || quantityValueLbl.getText().isEmpty() || minQuantityValue.getText().isEmpty()) {
 
                 msg.setBounds(255,370,200,20);
                 msg.setText("Fill All Fields !");
@@ -141,6 +142,7 @@ public class UpdateProductPage extends JPanel {
                     double d1 = Double.parseDouble(sellingPriceValueLbl.getText());
                     double d2 = Double.parseDouble(originalPriceValueLbl.getText());
                     int i = Integer.parseInt(quantityValueLbl.getText());
+                    int j = Integer.parseInt(minQuantityValue.getText());
                     if (d1 < 0){
                         msg.setBounds(175, 370, 330, 20);
                         msg.setText("You Enter Selling Price with Negative Value");
@@ -149,9 +151,9 @@ public class UpdateProductPage extends JPanel {
                         msg.setBounds(175, 370, 330, 20);
                         msg.setText("You Enter Buying Price with Negative Value");
                     }
-                    else if (i < 0){
+                    else if (i < 0 || j < 0){
                         msg.setBounds(175, 370, 330, 20);
-                        msg.setText("You Enter Product Quantity with Negative Value");
+                        msg.setText("You Enter The Quantity with Negative Value");
                     }
                     else if(i==0){
                         msg.setBounds(175, 370, 330, 20);
@@ -164,7 +166,7 @@ public class UpdateProductPage extends JPanel {
                             msg.setBounds(210, 370, 200, 20);
                             msg.setText("Updated Successfully!");
                         } else {
-                            dateLblValue.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+                            minQuantityValue.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
                         }
                     }
                 }
@@ -213,7 +215,7 @@ public class UpdateProductPage extends JPanel {
                             msg.setBounds(210, 370, 200, 20);
                             msg.setText("Deleted Successfully!");
                         } else {
-                            dateLblValue.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+                            minQuantityValue.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
                         }
                     }
                 }
@@ -298,8 +300,9 @@ public class UpdateProductPage extends JPanel {
         originalPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
         sellingPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
         quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-        dateLblValue.setText(databaseOperations.data.get(productNumber).getAddingToSystemDate());
+        minQuantityValue.setText(String.valueOf(databaseOperations.data.get(productNumber).getMinimumQuantity()));
         oldProductName = String.valueOf(databaseOperations.data.get(productNumber).getName());
+        oldCategory = (String)list.getModel().getElementAt(list.getSelectedIndex());
 
     }
 
@@ -317,8 +320,8 @@ public class UpdateProductPage extends JPanel {
         frame.add(quantityValueLbl);
         frame.add(quantityLbl);
         frame.add(updateBtn);
-        frame.add(dateLbl);
-        frame.add(dateLblValue);
+        frame.add(minQuantityLbl);
+        frame.add(minQuantityValue);
         frame.add(msg);
         frame.add(backBtn);
         frame.add(pane);
@@ -339,18 +342,31 @@ public class UpdateProductPage extends JPanel {
         quantityValueLbl.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                jTextFieldKeyTyped(e);
-                if (e.getKeyChar() == KeyEvent.VK_ENTER ) {
-                    if(!(searchField.getText().isEmpty() || quantityValueLbl.getText().isEmpty() || productName.getText().isEmpty() || sellingPriceValueLbl.getText().isEmpty() || originalPriceValueLbl.getText().isEmpty() || quantityValueLbl.getText().isEmpty())) {
-                        System.out.println("ENTER");
-                        updateProcess();
-                        msg.setBounds(210, 370, 200, 20);
-                        msg.setText("Updated Successfully!");
-                    }else{
-                        msg.setBounds(255,370,200,20);
-                        msg.setText("Fill All Fields !");
-                    }
-                }
+                enterAction(e);
+            }
+        });
+        minQuantityValue.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                enterAction(e);
+            }
+        });
+        productName.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                enterAction(e);
+            }
+        });
+        originalPriceValueLbl.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                enterAction(e);
+            }
+        });
+        sellingPriceValueLbl.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                enterAction(e);
             }
         });
 
@@ -386,6 +402,24 @@ public class UpdateProductPage extends JPanel {
 
     }
 
+    private void enterAction(KeyEvent e){
+        jTextFieldKeyTyped(e);
+        if (e.getKeyChar() == KeyEvent.VK_ENTER ) {
+            if(!(searchField.getText().isEmpty() ||
+                    quantityValueLbl.getText().isEmpty() || productName.getText().isEmpty() ||
+                    sellingPriceValueLbl.getText().isEmpty() || originalPriceValueLbl.getText().isEmpty() ||
+                    quantityValueLbl.getText().isEmpty() || minQuantityValue.getText().isEmpty())) {
+                System.out.println("ENTER");
+                updateProcess();
+                msg.setBounds(210, 370, 200, 20);
+                msg.setText("Updated Successfully!");
+            }else{
+                msg.setBounds(255,370,200,20);
+                msg.setText("Fill All Fields !");
+            }
+        }
+    }
+
 
     private void searchProcess(){
 
@@ -393,11 +427,12 @@ public class UpdateProductPage extends JPanel {
         int productNumber = databaseOperations.search(searchWord,(String)list.getModel().getElementAt(list.getSelectedIndex()));
         if(productNumber != -1){
             list.setSelectedIndex(getCategoryIndex(databaseOperations.data.get(productNumber)));
+            oldCategory = (String)list.getModel().getElementAt(list.getSelectedIndex());
             productName.setText(String.valueOf(databaseOperations.data.get(productNumber).getName()));
             originalPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getBuyPrice()));
             sellingPriceValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getSoldPrice()));
             quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-            dateLblValue.setText(databaseOperations.data.get(productNumber).getAddingToSystemDate());
+            minQuantityValue.setText(String.valueOf(databaseOperations.data.get(productNumber).getMinimumQuantity()));
             oldProductName = String.valueOf(databaseOperations.data.get(productNumber).getName());
         }else{
             msg.setBounds(260,370,150,20);
@@ -420,10 +455,11 @@ public class UpdateProductPage extends JPanel {
         Product newProduct = new Product();
         newProduct.setName(productName.getText());
         newProduct.setQuantity(Integer.parseInt(quantityValueLbl.getText()));
+        newProduct.setMinimumQuantity(Integer.parseInt(minQuantityValue.getText()));
         newProduct.setBuyPrice(Double.parseDouble(originalPriceValueLbl.getText()));
         newProduct.setSoldPrice(Double.parseDouble(sellingPriceValueLbl.getText()));
         newProduct.setCategory((String)list.getModel().getElementAt(list.getSelectedIndex()));
-        DatabaseHelper.updateProductValues(newProduct,oldProductName,(String)list.getModel().getElementAt(list.getSelectedIndex()));
+        DatabaseHelper.updateProductValues(newProduct,oldProductName,oldCategory);
     }
 
     private void deleteProcess(){
