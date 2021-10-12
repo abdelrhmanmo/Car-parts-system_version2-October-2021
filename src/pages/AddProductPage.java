@@ -26,6 +26,7 @@ public class AddProductPage extends JPanel{
     JTextField sellingPrice = new JTextField();
     JTextField buyingPrice = new JTextField();
     JTextField quantity = new JTextField();
+    JTextField minQuantityField = new JTextField();
 
     JLabel productNameLbl = new JLabel("-   Product Name : ");
 
@@ -37,6 +38,8 @@ public class AddProductPage extends JPanel{
 
     JLabel dateLbl = new JLabel(" -     Date : ");
     JLabel dateLblValue = new JLabel(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+
+    JLabel minQuantityLbl = new JLabel("-   Min-Quantity : ");
 
 
     JButton insertBtn = new JButton("Enter Product");
@@ -51,6 +54,7 @@ public class AddProductPage extends JPanel{
     // create a button and add action listener
     JButton btnGet = new JButton("Add Category");
 
+    int extraYForMSG = 40;
 
     public AddProductPage(){
         typingRules();
@@ -64,7 +68,7 @@ public class AddProductPage extends JPanel{
     private void Design(){
 
 
-        backBtn.setBounds(35,50,80,20);
+        backBtn.setBounds(35,30,80,20);
         productNameLbl.setBounds(45,95,140,15);
         productName.setBounds(190,90,190,25);
 
@@ -78,15 +82,19 @@ public class AddProductPage extends JPanel{
         quantityLbl.setBounds(45,215,120,15);
         quantity.setBounds(190,210,70,25);
 
-        dateLbl.setBounds(45,255,120,15);
-        dateLblValue.setBounds(172,250,160,25);
+
+        minQuantityLbl.setBounds(45,255,120,15);
+        minQuantityField.setBounds(190,250,70,25);
+
+        dateLbl.setBounds(45,295,120,15);
+        dateLblValue.setBounds(172,290,160,25);
 
 
-        insertBtn.setBounds(175,330,220,35);
-        msg.setBounds(190,370,160,20);
+        insertBtn.setBounds(175,360,220,35);
+        msg.setBounds(190,430 + extraYForMSG,160,20);
 
-        pane.setBounds(450,160,100,160);
-        btnGet.setBounds(420,120,160,20);
+        pane.setBounds(450,80,100,160);
+        btnGet.setBounds(420,260,160,20);
 
         //Fonts
         productNameLbl.setFont(labelFont);
@@ -95,6 +103,7 @@ public class AddProductPage extends JPanel{
         dateLbl.setFont(labelFont);
         dateLblValue.setFont(typingFont);
         buyingPriceLbl.setFont(labelFont);
+        minQuantityLbl.setFont(labelFont);
 
         //Text Color
         msg.setForeground(Color.red);
@@ -105,7 +114,7 @@ public class AddProductPage extends JPanel{
         insertBtn.addActionListener((ActionEvent ae) ->{
             if(productName.getText().isEmpty() || sellingPrice.getText().isEmpty() || buyingPrice.getText().isEmpty() || quantity.getText().isEmpty()) {
 
-                msg.setBounds(255,370,200,20);
+                msg.setBounds(255,370 + extraYForMSG,200,20);
                 msg.setText("Fill All Fields !");
             }else {
                 try {
@@ -113,25 +122,25 @@ public class AddProductPage extends JPanel{
                     double d2 = Double.parseDouble(buyingPrice.getText());
                     int i = Integer.parseInt(quantity.getText());
                     if (d1 < 0){
-                        msg.setBounds(175, 370, 330, 20);
+                        msg.setBounds(175, 370 + extraYForMSG, 330, 20);
                         msg.setText("You Enter Selling Price with Negative Value");
                     }
                     else if (d2 < 0){
-                        msg.setBounds(175, 370, 330, 20);
+                        msg.setBounds(175, 370 + extraYForMSG, 330, 20);
                         msg.setText("You Enter Buying Price with Negative Value");
                     }
                     else if (i < 0){
-                        msg.setBounds(175, 370, 330, 20);
+                        msg.setBounds(175, 370 + extraYForMSG, 330, 20);
                         msg.setText("You Enter Product Quantity with Negative Value");
                     }
                     else if(i==0){
-                        msg.setBounds(175, 370, 330, 20);
+                        msg.setBounds(175, 370 + extraYForMSG, 330, 20);
                         msg.setText("You Enter Product Quantity :  0");
                     }
                     else {
                         ConfirmPopUp pop = new ConfirmPopUp(frame,productName.getText());
                         if (pop.getResult() == 0) {
-                            msg.setBounds(210, 370, 200, 20);
+                            msg.setBounds(210, 370 + extraYForMSG, 200, 20);
                             msg.setText(insertProcess());
                         } else {
                             dateLblValue.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
@@ -139,7 +148,7 @@ public class AddProductPage extends JPanel{
                     }
                 }
                 catch (NumberFormatException nfe){
-                    msg.setBounds(210, 370, 210, 20);
+                    msg.setBounds(210, 370 + extraYForMSG, 210, 20);
                     msg.setText("Check Your Data Again Please!!!");
                 }
             }
@@ -186,6 +195,8 @@ public class AddProductPage extends JPanel{
         frame.add(insertBtn);
         frame.add(dateLbl);
         frame.add(dateLblValue);
+        frame.add(minQuantityLbl);
+        frame.add(minQuantityField);
         frame.add(msg);
         frame.add(backBtn);
         frame.add(pane);
@@ -194,7 +205,7 @@ public class AddProductPage extends JPanel{
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Adding Product Page");
-        frame.setSize(600,460);
+        frame.setSize(600,500);
         frame.setLocation(560,80);
         frame.setVisible(true);
         frame.setResizable(false);
@@ -228,37 +239,44 @@ public class AddProductPage extends JPanel{
             }
         });
 
+        minQuantityField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                jTextFieldKeyTyped(e);
+                if (e.getKeyChar() == KeyEvent.VK_ENTER ) {
+                    insertBtnChecking();
+                }
+            }
+        });
+
         
     }
 
     private void insertBtnChecking(){
+
         try {
             double d1 = Double.parseDouble(sellingPrice.getText());
             double d2 = Double.parseDouble(buyingPrice.getText());
             int i = Integer.parseInt(quantity.getText());
-            if (d1 < 0) {
-                msg.setBounds(175, 370, 330, 20);
-                msg.setText("You Enter Selling Price with Negative Value");
-            } else if (d2 < 0) {
-                msg.setBounds(175, 370, 330, 20);
-                msg.setText("You Enter Buying Price with Negative Value");
-            } else if (i < 0) {
-                msg.setBounds(175, 370, 330, 20);
-                msg.setText("You Enter Product Quantity with Negative Value");
-            } else if (i == 0) {
-                msg.setBounds(175, 370, 330, 20);
-                msg.setText("You Enter Product Quantity :  0");
+            int j = Integer.parseInt(minQuantityField.getText());
+
+            if (d1 < 0 || d2 < 0) {
+                msg.setBounds(175, 370 + extraYForMSG, 330, 20);
+                msg.setText("You Enter The Price with Negative Value");
+            } else if (i < 0 || j < 0) {
+                msg.setBounds(175, 370 + extraYForMSG, 330, 20);
+                msg.setText("You Enter The Quantity with Negative Value");
             } else {
                 ConfirmPopUp pop = new ConfirmPopUp(frame, productName.getText());
                 if (pop.getResult() == 0) {
-                    msg.setBounds(210, 370, 200, 20);
+                    msg.setBounds(210, 370 + extraYForMSG, 200, 20);
                     msg.setText(insertProcess());
                 } else {
                     dateLblValue.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
                 }
             }
         } catch (NumberFormatException nfe) {
-            msg.setBounds(210, 370, 210, 20);
+            msg.setBounds(210, 370 + extraYForMSG, 210, 20);
             msg.setText("Check Your Data Again Please!!!");
         }
     }
@@ -272,6 +290,10 @@ public class AddProductPage extends JPanel{
 
     private String insertProcess(){
         if(list.getSelectedIndex()>=0) {
+            boolean wanted = false;
+            if(Integer.parseInt(minQuantityField.getText()) > Integer.parseInt(quantity.getText())){
+                wanted = true;
+            }
             return DatabaseHelper.insertData(
                     new Product(
                             productName.getText(),
@@ -280,8 +302,8 @@ public class AddProductPage extends JPanel{
                             Integer.parseInt(quantity.getText()),
                             new Date(),
                             (String) list.getModel().getElementAt(list.getSelectedIndex()),
-                            2,
-                            false
+                            Integer.parseInt(minQuantityField.getText()),
+                            wanted
                     )
             );
         }
