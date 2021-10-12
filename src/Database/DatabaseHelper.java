@@ -156,7 +156,7 @@ public class DatabaseHelper {
     }
 
     public static void updateProductValues(Product product , String oldName,String category){
-        String sql = "UPDATE products SET product_name = ?,sold_price = ?,buy_price = ? , quantity = ? , category = ? WHERE product_name = ? AND category = ?";
+        String sql = "UPDATE products SET product_name = ?,sold_price = ?,buy_price = ? , quantity = ? , category = ? , minimum_quantity = ? WHERE product_name = ? AND category = ?";
 
 
         System.out.println(product.toString());
@@ -171,13 +171,38 @@ public class DatabaseHelper {
             pstmt.setDouble(3, product.getBuyPrice());
             pstmt.setInt(4, product.getQuantity());
             pstmt.setString(5, product.getCategory());
-            pstmt.setString(6, oldName);
-            pstmt.setString(7, category);
+            pstmt.setInt(6,product.getMinimumQuantity());
+            System.out.println("UPDATED !!");
+            pstmt.setString(7, oldName);
+            pstmt.setString(8, category);
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return;
+        }
+        getAllData();
+        getWantedProducts();
+        getAllCategories();
+        getAllSalesData();
+    }
+
+    public static void setWantedValue(boolean newWantedValue,String productName, String Category){
+        String sql = "UPDATE products SET wanted = ? WHERE product_name = ? AND  category = ?";
+
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            // set the corresponding param
+            pstmt.setBoolean(1, newWantedValue);
+            pstmt.setString(2, productName);
+            pstmt.setString(3,Category);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         getAllData();
         getWantedProducts();
