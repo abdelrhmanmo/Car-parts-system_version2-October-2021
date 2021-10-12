@@ -1,5 +1,6 @@
 package  pages;
 
+import Database.DatabaseHelper;
 import Database.databaseOperations;
 import classes.Product;
 
@@ -31,6 +32,23 @@ public class ConfirmPopUp {
             System.out.println("No button clicked");
         } else if (result == JOptionPane.YES_OPTION) {
             System.out.println("Yes button clicked");
+        } else if (result == JOptionPane.CLOSED_OPTION) {
+            System.out.println("JOptionPane closed");
+        }
+    }
+
+    public ConfirmPopUp(JFrame parent,String productName,String proCategory,int x, boolean wanted){
+        JDialog.setDefaultLookAndFeelDecorated(true);
+        this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to Remove " + productName +" ?", "Confirm",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (result == JOptionPane.NO_OPTION) {
+            System.out.println("No button clicked");
+        } else if (result == JOptionPane.YES_OPTION) {
+            System.out.println("Yes button clicked");
+            DatabaseHelper.setWantedValue(false,productName,proCategory);
+            wantedProductsPage.wantedProductsArr[x][0].setText(" _ ");
+            wantedProductsPage.wantedProductsArr[x][1].setText("");
+            wantedProductsPage.wantedProductsArr[x][2].setText("");
         } else if (result == JOptionPane.CLOSED_OPTION) {
             System.out.println("JOptionPane closed");
         }
