@@ -12,7 +12,7 @@ public class wantedProductsPage extends JPanel {
     Font headFont = new Font("Arial",Font.BOLD,12);
 
     JTextField[] headFields = new JTextField[4];
-    JTextField[][] wantedProductsArr = new JTextField[10][5];
+    public static  JTextField[][] wantedProductsArr = new JTextField[10][5];
     JButton backBtn = new JButton("Back");
     JButton nextBtn = new JButton("->");
     JButton previousBtn = new JButton("<-");
@@ -70,8 +70,8 @@ public class wantedProductsPage extends JPanel {
 
                     switch (j) {
                         case 0 -> wantedProductsArr[i][j].setText(String.valueOf(databaseOperations.wantedProducts.get(productNumber).getQuantity()));
-                        case 1 -> wantedProductsArr[i][j].setText(databaseOperations.wantedProducts.get(productNumber).getName().length() > 9 ?
-                                databaseOperations.wantedProducts.get(productNumber).getName().substring(0,9).concat("...") :
+                        case 1 -> wantedProductsArr[i][j].setText(/*databaseOperations.wantedProducts.get(productNumber).getName().length() > 9 ?
+                                databaseOperations.wantedProducts.get(productNumber).getName().substring(0,9).concat("...") :*/
                                 databaseOperations.wantedProducts.get(productNumber).getName());
                         case 2 -> wantedProductsArr[i][j].setText(String.valueOf(databaseOperations.wantedProducts.get(productNumber).getCategory()));
                     }
@@ -119,14 +119,14 @@ public class wantedProductsPage extends JPanel {
 
         backBtn.setBounds(30,572,80,20);
 
-        nextBtn.setBounds(300,572,50,20);
+        nextBtn.setBounds(300 + 150,572,50,20);
 
-        pageNumberTF.setBounds(255,572,40,20); //-45
+        pageNumberTF.setBounds(255 + 150,572,40,20); //-45
         pageNumberTF.setText(currentPageNumber + " / " + numberOfPages);
         pageNumberTF.setEditable(false);
         pageNumberTF.setHorizontalAlignment(0);
 
-        previousBtn.setBounds(200,572,50,20);
+        previousBtn.setBounds(200 + 150,572,50,20);
 
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
@@ -145,15 +145,15 @@ public class wantedProductsPage extends JPanel {
                 }
                 case 1 -> {
                     headFields[i] = new JTextField("Name");
-                    headFields[i].setBounds(90, 0, 151, 50);
+                    headFields[i].setBounds(90, 0, 151 + 250, 50);
                 }
                 case 2 -> {
                     headFields[i] = new JTextField("Category");
-                    headFields[i].setBounds(240, 0, 122, 50);
+                    headFields[i].setBounds(240 + 250, 0, 122 + 50, 50);
                 }
                 case 3 -> {
                     headFields[i] = new JTextField("Operation");
-                    headFields[i].setBounds(360, 0, 200, 50);
+                    headFields[i].setBounds(360 + 300, 0, 200, 50);
                 }
             }
             headFields[i].setBackground(Color.gray);
@@ -177,16 +177,16 @@ public class wantedProductsPage extends JPanel {
                         wantedProductsArr[i][j].setBounds(0, 51 * (i + 1), 91, 48);
                         wantedProductsArr[i][j].setText(" _ ");
                     }
-                    case 1 -> wantedProductsArr[i][j].setBounds(90, 51 * (i + 1), 151, 48);
-                    case 2 -> wantedProductsArr[i][j].setBounds(240, 51 * (i + 1), 122, 48);
+                    case 1 -> wantedProductsArr[i][j].setBounds(90, 51 * (i + 1), 151 + 250, 48);
+                    case 2 -> wantedProductsArr[i][j].setBounds(240 + 250, 51 * (i + 1), 122 + 50, 48);
                     case 3 -> {
-                        wantedProductsArr[i][j].setBounds(385, 51 * (i + 1), 70, 48);
+                        wantedProductsArr[i][j].setBounds(385 + 300, 51 * (i + 1), 70, 48);
                         wantedProductsArr[i][j].setText("UPDATE");
                         wantedProductsArr[i][j].setFont(new Font("Arial",Font.BOLD,12));
                         wantedProductsArr[i][j].setForeground(Color.green);
                     }
                     case 4 -> {
-                        wantedProductsArr[i][j].setBounds(465, 51 * (i + 1), 70, 48);
+                        wantedProductsArr[i][j].setBounds(465 + 300, 51 * (i + 1), 70, 48);
                         wantedProductsArr[i][j].setText(" X ");
                         wantedProductsArr[i][j].setForeground(Color.red);
                     }
@@ -206,11 +206,7 @@ public class wantedProductsPage extends JPanel {
                                 new increaseInQuantityFrame(proName, proCategory, oldQuantity, recordNumber);
                                 frame.dispose();
                             } else if (y == 4) {
-                                new ConfirmPopUp();
-                                wantedProductsArr[x][0].setText(" _ ");
-                                wantedProductsArr[x][1].setText("");
-                                wantedProductsArr[x][2].setText("");
-                                DatabaseHelper.deleteData(proName,proCategory);
+                                new ConfirmPopUp(frame, proName,proCategory,x,true);
                             }
                         }
                     }
@@ -239,7 +235,7 @@ public class wantedProductsPage extends JPanel {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Wanted Products");
-        frame.setSize(575,650);
+        frame.setSize(575 + 300,650);
         frame.setLocation(400,60);
         frame.setVisible(true);
         frame.setResizable(false);
