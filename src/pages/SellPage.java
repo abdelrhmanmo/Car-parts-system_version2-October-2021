@@ -262,7 +262,9 @@ public class SellPage extends JPanel {
             String howManyStr = howManyValueTextField.getText();
             if (Integer.parseInt(howManyStr) <= databaseOperations.data.get(productNumber).getQuantity()) {
                 total = Integer.parseInt(howManyStr) *
-                        Integer.parseInt(sellingPriceValueLbl.getText());
+                        Double.parseDouble(sellingPriceValueLbl.getText());
+
+
                 totalValueLbl.setText(String.valueOf(total));
                 pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
 
