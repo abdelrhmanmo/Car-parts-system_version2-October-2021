@@ -74,7 +74,7 @@ public class Menu extends JPanel {
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("KENZ System");
+        frame.setTitle("System");
         frame.setSize(595,400);
         frame.setLocation(500,50);
         frame.setVisible(true);
