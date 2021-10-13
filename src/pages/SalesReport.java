@@ -6,10 +6,7 @@ import com.itextpdf.text.BadElementException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +33,7 @@ public class SalesReport extends JPanel {
     JComboBox<String> dateList = new JComboBox<>();
     JButton filterBtn = new JButton("Search");
     JButton exportBtn = new JButton("Export");
+    JButton returnsBtn = new JButton("Returns");
 
     public SalesReport(){
         length = databaseOperations.salesData.toArray().length;
@@ -100,24 +98,7 @@ public class SalesReport extends JPanel {
                     case 4 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getSellingDate()));
                     case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.salesData.get(productNumber).getCategory()));
                 }
-                int x = i, y = j;
-                int finalProductNumber = productNumber;
-                /*productsArr[i][j].addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
 
-                        if(databaseOperations.salesData.get(finalProductNumber).getName().length()<9) {
-                            if (productsArr[x][y].getText().equals(databaseOperations.salesData.get(finalProductNumber).getName())) {
-                                new ProductNamePopUp(frame, databaseOperations.salesData.get(finalProductNumber).getName());
-                            }
-                        }
-                        else{
-                            if(productsArr[x][y].getText().equals(databaseOperations.salesData.get(finalProductNumber).getName().substring(0, 9).concat("..."))){
-                                new ProductNamePopUp(frame, databaseOperations.salesData.get(finalProductNumber).getName());
-                            }
-                        }
-                    }
-                });*/
             }
 
         }
@@ -147,11 +128,13 @@ public class SalesReport extends JPanel {
         dateList.setBounds(470 + 200,572,150,20);
         filterBtn.setBounds(640 + 250,572,90,20);
         exportBtn.setBounds(180,572,75,20);
+        returnsBtn.setBounds(270,572,90,20);
 
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
         previousBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
         exportBtn.setForeground(Color.BLUE);
+        returnsBtn.setForeground(Color.RED);
 
         for(int i = 0; i < 6; i++) {
             switch (i) {
@@ -215,6 +198,11 @@ public class SalesReport extends JPanel {
             }
         });
 
+        returnsBtn.addActionListener((ActionEvent ae)->{
+            frame.dispose();
+            new ReturnsPage();
+        });
+
 
     }
 
@@ -253,9 +241,30 @@ public class SalesReport extends JPanel {
                     System.out.println("Canceld");
                 }
             }
-            case "Today"->DatabaseHelper.getSpecificDateSalesData(getTodayDateString());
-            case "Yesterday"->DatabaseHelper.getSpecificDateSalesData(getYesterdayDateString());
-            case "Before Yesterday"->DatabaseHelper.getSpecificDateSalesData(getBeforeYesterdayDateString());
+            case "Today" -> {
+                if (new ConfirmPopUp(frame, getTodayDateString(), 1).getResult() == 0) {
+                    DatabaseHelper.getSpecificDateSalesData(getTodayDateString());
+                    DatabaseHelper.exportDataFromSpecificDay(getTodayDateString());
+                } else {
+                    System.out.println("Canceld");
+                }
+            }
+            case "Yesterday" -> {
+                if (new ConfirmPopUp(frame, getYesterdayDateString(), 1).getResult() == 0) {
+                    DatabaseHelper.getSpecificDateSalesData(getYesterdayDateString());
+                    DatabaseHelper.exportDataFromSpecificDay(getYesterdayDateString());
+                } else {
+                    System.out.println("Canceld");
+                }
+            }
+            case "Before Yesterday" -> {
+                if (new ConfirmPopUp(frame, getBeforeYesterdayDateString(), 1).getResult() == 0) {
+                    DatabaseHelper.getSpecificDateSalesData(getBeforeYesterdayDateString());
+                    DatabaseHelper.exportDataFromSpecificDay(getBeforeYesterdayDateString());
+                } else {
+                    System.out.println("Canceld");
+                }
+            }
         }
     }
 
@@ -303,6 +312,7 @@ public class SalesReport extends JPanel {
         frame.add(dateList);
         frame.add(filterBtn);
         frame.add(exportBtn);
+        frame.add(returnsBtn);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

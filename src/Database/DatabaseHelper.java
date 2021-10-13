@@ -210,6 +210,35 @@ public class DatabaseHelper {
         getAllSalesData();
     }
 
+    public static void setReturns(boolean newReturnsValue,String productName, String Category){
+        String sql = "UPDATE soldProducts SET returns = ? WHERE product_name = ? AND  category = ?";
+
+        System.out.println(newReturnsValue+" "+productName + " "+Category);
+        try  {
+            Connection conn;
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            // set the corresponding param
+            pstmt.setBoolean(1, newReturnsValue);
+            pstmt.setString(2, productName);
+            pstmt.setString(3,Category);
+            System.out.println(newReturnsValue);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println(databaseOperations.returns.get(0).isReturns());
+        getAllData();
+        getWantedProducts();
+        getAllCategories();
+        getAllSalesData();
+        getAllReturnsData();
+    }
+
+
+
     public static void updateProductQuantity (Product product , int index , int newQuantity , String category){
         String sql = "UPDATE products SET quantity = ? WHERE product_name = ? AND  category = ?";
 
@@ -354,7 +383,7 @@ public class DatabaseHelper {
     }
 
     public static void getAllSalesData(){
-        String sql = "SELECT * FROM soldProducts";
+        String sql = "SELECT * FROM soldProducts WHERE returns = 0";
         databaseOperations.salesData.clear();
         try{
             Connection conn;
@@ -384,6 +413,39 @@ public class DatabaseHelper {
         }
         Collections.reverse(databaseOperations.salesData);
     }
+
+    public static void getAllReturnsData(){
+        String sql = "SELECT * FROM soldProducts WHERE returns = 1";
+        databaseOperations.returns.clear();
+        try{
+            Connection conn;
+            // db parameters
+            String url = "jdbc:sqlite:"+ name;
+            conn = DriverManager.getConnection(url);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);  ////// return all rows in the table
+            // loop through the result set
+            while (rs.next()) {
+
+                rs.getString("product_name");
+                /*This is how we can add data and use it in the system*/
+                Product p = new Product();
+                p.setName(rs.getString("product_name"));
+                p.setTotalPrice(rs.getDouble("price"));
+                p.setQuantity(rs.getInt("quantity"));
+                p.setSellingDate(rs.getString("selling_date"));
+                p.setCategory(rs.getString("category"));
+                p.setSoldPrice(rs.getDouble("price")/rs.getInt("quantity"));
+                p.setReturns(rs.getInt("returns")==1);
+                System.out.println(p.toString());
+                databaseOperations.returns.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        Collections.reverse(databaseOperations.returns);
+    }
+
     public static void getSpecificDateSalesData(String date){
         String sql = "SELECT * FROM soldProducts WHERE selling_date LIKE '%"+date+"%'";
         System.out.println(sql);
@@ -440,6 +502,9 @@ public class DatabaseHelper {
 
         getAllCategories();
         getAllData();
+        getAllSalesData();
+        getAllReturnsData();
+        getWantedProducts();
     }
 
     public static void getWantedProducts(){
@@ -468,6 +533,7 @@ public class DatabaseHelper {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        Collections.reverse(databaseOperations.wantedProducts);
     }
     private static void addMetaData(Document document) {
         document.addTitle("ALL PRODUCTS IN THE SYSTEM");
@@ -487,6 +553,7 @@ public class DatabaseHelper {
             BaseFont bf = BaseFont.createFont("c:/Amiri-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             Font font = new Font(bf, 12);
             addMetaData(document);
+            document.setMargins(0,0,10,1);
 
             document.open();
 
@@ -538,29 +605,32 @@ public class DatabaseHelper {
             int counter = 0;
             for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
 
-                c1 = new PdfPCell(new Phrase("---",font));
-                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                c1.setBackgroundColor(BaseColor.RED);
-                c1.setPadding(10);
-                table.addCell(c1);
-                table.addCell(c1);
-                c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
-                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                c1.setBackgroundColor(BaseColor.RED);
-                c1.setPadding(10);
-                c1.setArabicOptions(1);
-                c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
-                table.addCell(c1);
-                c1 = new PdfPCell(new Phrase("---",font));
-                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                c1.setPadding(10);
-                c1.setBackgroundColor(BaseColor.RED);
-                table.addCell(c1);
-                table.addCell(c1);
 
                 for(int j = 0 ; j < databaseOperations.data.toArray().length;j++){
-                    counter++;
                     if(databaseOperations.data.get(j).getCategory().equals(databaseOperations.allCategories.get(i))){
+                        counter++;
+
+
+
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        table.addCell(c1);
+                        table.addCell(c1);
 
                         c1 = new PdfPCell(new Phrase(String.valueOf(counter)));
                         c1.setHorizontalAlignment(Element.ALIGN_MIDDLE);
@@ -675,30 +745,33 @@ public class DatabaseHelper {
             int counter = 0;
             for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
 
-                c1 = new PdfPCell(new Phrase("---",font));
-                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                c1.setBackgroundColor(BaseColor.RED);
-                c1.setPadding(10);
-                table.addCell(c1);
-                table.addCell(c1);
-                c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
-                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                c1.setBackgroundColor(BaseColor.RED);
-                c1.setPadding(10);
-                c1.setArabicOptions(1);
-                c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
-                table.addCell(c1);
-                c1 = new PdfPCell(new Phrase("---",font));
-                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                c1.setPadding(10);
-                c1.setBackgroundColor(BaseColor.RED);
-                table.addCell(c1);
-                table.addCell(c1);
-                table.addCell(c1);
 
                 for(int j = 0 ; j < databaseOperations.data.toArray().length;j++){
-                    counter++;
                     if(databaseOperations.salesData.get(j).getCategory().equals(databaseOperations.allCategories.get(i))){
+
+
+                        counter++;
+
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        table.addCell(c1);
+                        table.addCell(c1);
+                        table.addCell(c1);
 
                         c1 = new PdfPCell(new Phrase(String.valueOf(counter)));
                         c1.setHorizontalAlignment(Element.ALIGN_MIDDLE);
@@ -759,4 +832,433 @@ public class DatabaseHelper {
 
     }
 
+    public static void exportDataFromSpecificDay(String date){
+
+        String file = "Data/"+date.replace("/","-")+".pdf";
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+            BaseFont bf = BaseFont.createFont("c:/Amiri-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font font = new Font(bf, 12);
+            addMetaData(document);
+            document.setMargins(0,0,10,1);
+
+            document.open();
+
+            PdfPTable table = new PdfPTable(6);
+
+
+            PdfPCell c1 = new PdfPCell(new Paragraph("م",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الصنف",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الكمية المباعة",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("سعر عمليه البيع",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("تاريخ البيع",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("آجل",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            table.setHeaderRows(1);
+
+            int counter = 0;
+            for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
+
+
+
+                for(int j = 0 ; j < databaseOperations.data.toArray().length;j++){
+                    if(databaseOperations.salesData.get(j).getCategory().equals(databaseOperations.allCategories.get(i))){
+                        counter++;
+
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        table.addCell(c1);
+                        table.addCell(c1);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(counter)));
+                        c1.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+
+                        Phrase phrase = new Phrase();
+                        Chunk c = new Chunk(String.valueOf(databaseOperations.salesData.get(j).getName()),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setExtraParagraphSpace(30);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.salesData.get(j).getQuantity())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.salesData.get(j).getTotalPrice())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        phrase = new Phrase();
+                        c = new Chunk(String.valueOf(databaseOperations.salesData.get(j).getSellingDate()),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setExtraParagraphSpace(30);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        phrase = new Phrase();
+                        c = new Chunk((databaseOperations.salesData.get(j).isReturns() ? "نعم":"لا"),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                    }
+                }
+            }
+            document.add(table);
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public static void exportAllWantedData(String date) {
+
+        String file = "Data/WantedProducts "+date.replace("/","-")+".pdf";
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+            BaseFont bf = BaseFont.createFont("c:/Amiri-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font font = new Font(bf, 12);
+            addMetaData(document);
+            document.setMargins(0,0,10,1);
+
+            document.open();
+
+            PdfPTable table = new PdfPTable(4);
+
+
+            PdfPCell c1 = new PdfPCell(new Paragraph("م",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الصنف",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الكمية",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("سعر الجمله",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+
+            table.setHeaderRows(1);
+
+            int counter = 0;
+            for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
+
+
+
+                for(int j = 0 ; j < databaseOperations.wantedProducts.toArray().length;j++){
+                    if(databaseOperations.wantedProducts.get(j).getCategory().equals(databaseOperations.allCategories.get(i))){
+
+                        counter++;
+
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        table.addCell(c1);
+                        table.addCell(c1);
+
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(counter)));
+                        c1.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+
+                        Phrase phrase = new Phrase();
+                        Chunk c = new Chunk(String.valueOf(databaseOperations.wantedProducts.get(j).getName()),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setExtraParagraphSpace(30);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.wantedProducts.get(j).getQuantity())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.wantedProducts.get(j).getBuyPrice())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+
+                    }
+                }
+            }
+            document.add(table);
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void exportAllReturnsData(String date) {
+        String file = "Data/آجل بتاريخ"+date.replace("/","-")+".pdf";
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+            BaseFont bf = BaseFont.createFont("c:/Amiri-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font font = new Font(bf, 12);
+            addMetaData(document);
+            document.setMargins(0,0,10,1);
+
+            document.open();
+
+            PdfPTable table = new PdfPTable(6);
+
+
+            PdfPCell c1 = new PdfPCell(new Paragraph("م",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الصنف",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("الكمية المباعة",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("سعر عمليه البيع",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("تاريخ البيع",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            c1 = new PdfPCell(new Paragraph("آجل",font));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(BaseColor.YELLOW);
+            c1.setPadding(10);
+            c1.setArabicOptions(1);
+            c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+            table.addCell(c1);
+
+            table.setHeaderRows(1);
+
+            int counter = 0;
+            for (int i = 0 ; i < databaseOperations.allCategories.toArray().length;i++){
+
+
+
+                for(int j = 0 ; j < databaseOperations.returns.toArray().length;j++){
+                    if(databaseOperations.returns.get(j).getCategory().equals(databaseOperations.allCategories.get(i))){
+                        counter++;
+
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase(databaseOperations.allCategories.get(i),font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+                        c1 = new PdfPCell(new Phrase("---",font));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setBackgroundColor(BaseColor.RED);
+                        table.addCell(c1);
+                        table.addCell(c1);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(counter)));
+                        c1.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+
+                        Phrase phrase = new Phrase();
+                        Chunk c = new Chunk(String.valueOf(databaseOperations.returns.get(j).getName()),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setExtraParagraphSpace(30);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.returns.get(j).getQuantity())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase(String.valueOf(databaseOperations.returns.get(j).getTotalPrice())));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        table.addCell(c1);
+
+                        phrase = new Phrase();
+                        c = new Chunk(String.valueOf(databaseOperations.returns.get(j).getSellingDate()),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setExtraParagraphSpace(30);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                        phrase = new Phrase();
+                        c = new Chunk((databaseOperations.returns.get(j).isReturns() ? "نعم":"لا"),font);
+                        phrase.add(c);
+                        c1 = new PdfPCell(phrase);
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10);
+                        c1.setArabicOptions(1);
+                        c1.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+                        table.addCell(c1);
+
+                    }
+                }
+            }
+            document.add(table);
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

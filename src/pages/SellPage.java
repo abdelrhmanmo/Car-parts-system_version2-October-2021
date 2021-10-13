@@ -266,25 +266,45 @@ public class SellPage extends JPanel {
 
 
                 totalValueLbl.setText(String.valueOf(total));
-                pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr);
+                pop = new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr,1);
 
                 if(pop.getResult() == 0){
-                    soldLbl.setBounds(240, 370, 150, 20);
-                    soldLbl.setText("Sold Successfully !");
-                    date = formatter.format(new Date());
+                    if(new ConfirmPopUp(frame,String.valueOf(total) ,databaseOperations.data.get(productNumber).getName(),howManyStr,2).getResult() == 0){
+                        soldLbl.setBounds(240, 370, 150, 20);
+                        soldLbl.setText("Sold Successfully !");
+                        date = formatter.format(new Date());
 
-                    DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber) , productNumber ,
-                            (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr)),(String)list.getModel().getElementAt(list.getSelectedIndex()));
+                        DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber), productNumber,
+                                (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr)), (String) list.getModel().getElementAt(list.getSelectedIndex()));
 
-                    DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(),Integer.parseInt(howManyStr),date,total,(String)list.getModel().getElementAt(list.getSelectedIndex()),false);
+                        DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(), Integer.parseInt(howManyStr), date, total, (String) list.getModel().getElementAt(list.getSelectedIndex()), true);
 
-                    //Empty Fields
-                    quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
-                    howManyValueTextField.setText("");
-                    totalValueLbl.setText("");
-                    searchField.setText("");
-                    DatabaseHelper.getAllSalesData();
-                    DatabaseHelper.getAllData();
+                        //Empty Fields
+                        quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+                        howManyValueTextField.setText("");
+                        totalValueLbl.setText("");
+                        searchField.setText("");
+                        DatabaseHelper.getAllSalesData();
+                        DatabaseHelper.getAllData();
+                    }
+                    else {
+                        soldLbl.setBounds(240, 370, 150, 20);
+                        soldLbl.setText("Sold Successfully !");
+                        date = formatter.format(new Date());
+
+                        DatabaseHelper.updateProductQuantity(databaseOperations.data.get(productNumber), productNumber,
+                                (databaseOperations.data.get(productNumber).getQuantity() - Integer.parseInt(howManyStr)), (String) list.getModel().getElementAt(list.getSelectedIndex()));
+
+                        DatabaseHelper.insertSoldProductDetails(databaseOperations.data.get(productNumber).getName(), Integer.parseInt(howManyStr), date, total, (String) list.getModel().getElementAt(list.getSelectedIndex()), false);
+
+                        //Empty Fields
+                        quantityValueLbl.setText(String.valueOf(databaseOperations.data.get(productNumber).getQuantity()));
+                        howManyValueTextField.setText("");
+                        totalValueLbl.setText("");
+                        searchField.setText("");
+                        DatabaseHelper.getAllSalesData();
+                        DatabaseHelper.getAllData();
+                    }
                 }
                 else{
                     soldLbl.setText("");

@@ -212,7 +212,9 @@ public class showProductsPage extends JPanel{
         filterBtn.addActionListener((ActionEvent ae)-> dataFiltration(Objects.requireNonNull(catList.getSelectedItem()).toString()));
         exportBtn.addActionListener((ActionEvent ae)-> {
             try {
-                DatabaseHelper.exportAllProducts();
+                if(new ConfirmPopUp(frame , "" , 3).getResult() == 0) {
+                    DatabaseHelper.exportAllProducts();
+                }
             } catch (BadElementException e) {
                 e.printStackTrace();
             }
@@ -228,14 +230,16 @@ public class showProductsPage extends JPanel{
                         if(y == 7){
 
                             if(productsArr[x][y].getBackground().equals(Color.GREEN)){
-                                System.out.println("Green");
-                                productsArr[x][y].setBackground(Color.RED);
-                                DatabaseHelper.setWantedValue(true,productsArr[x][0].getText(),productsArr[x][5].getText());
+                                if(new ConfirmRemovePopUp(frame,2,"Add").getResult()==0) {
+                                    productsArr[x][y].setBackground(Color.RED);
+                                    DatabaseHelper.setWantedValue(true, productsArr[x][0].getText(), productsArr[x][5].getText());
+                                }
+                            }else {
+                                if (new ConfirmRemovePopUp(frame, 2, "Remove").getResult() == 0) {
+                                    productsArr[x][y].setBackground(Color.GREEN);
+                                    DatabaseHelper.setWantedValue(false, productsArr[x][0].getText(), productsArr[x][5].getText());
 
-                            }else{
-                                System.out.println("RED");
-                                productsArr[x][y].setBackground(Color.GREEN);
-                                DatabaseHelper.setWantedValue(false,productsArr[x][0].getText(),productsArr[x][5].getText());
+                                }
                             }
 
 

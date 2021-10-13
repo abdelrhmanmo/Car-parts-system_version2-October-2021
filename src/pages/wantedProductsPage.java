@@ -3,17 +3,21 @@ package pages;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import Database.*;
-import classes.Product;
 
 public class wantedProductsPage extends JPanel {
 
     JFrame frame = new JFrame();
     Font headFont = new Font("Arial",Font.BOLD,12);
 
-    JTextField[] headFields = new JTextField[4];
-    public static  JTextField[][] wantedProductsArr = new JTextField[10][5];
+    JTextField[] headFields = new JTextField[5];
+    public static  JTextField[][] wantedProductsArr = new JTextField[10][6];
     JButton backBtn = new JButton("Back");
+    JButton exportBtn = new JButton("Export");
     JButton nextBtn = new JButton("->");
     JButton previousBtn = new JButton("<-");
     JTextField pageNumberTF = new JTextField();
@@ -44,12 +48,13 @@ public class wantedProductsPage extends JPanel {
             frame.dispose();
         });
 
-        nextBtn.addActionListener((ActionEvent ae) -> {
-            nextPageOfData();
-        });
+        nextBtn.addActionListener((ActionEvent ae) -> nextPageOfData()
+        );
 
-        previousBtn.addActionListener((ActionEvent ae) -> {
-             previousPageOfData();
+        previousBtn.addActionListener((ActionEvent ae) -> previousPageOfData()
+        );
+        exportBtn.addActionListener((ActionEvent ae)-> {
+            if(new ConfirmPopUp(frame, "", 4).getResult() == 0) DatabaseHelper.exportAllWantedData(getTodayDateString());
         });
     }
 
@@ -66,7 +71,7 @@ public class wantedProductsPage extends JPanel {
         deleteData();
         for(int i = 0; i < numOfRows;i++){
             productNumber++;
-            for(int j = 0; j < 3;j++) {
+            for(int j = 0; j < 6;j++) {
 
                     switch (j) {
                         case 0 -> wantedProductsArr[i][j].setText(String.valueOf(databaseOperations.wantedProducts.get(productNumber).getQuantity()));
@@ -74,6 +79,7 @@ public class wantedProductsPage extends JPanel {
                                 databaseOperations.wantedProducts.get(productNumber).getName().substring(0,9).concat("...") :*/
                                 databaseOperations.wantedProducts.get(productNumber).getName());
                         case 2 -> wantedProductsArr[i][j].setText(String.valueOf(databaseOperations.wantedProducts.get(productNumber).getCategory()));
+                        case 5 -> wantedProductsArr[i][j].setText(String.valueOf(databaseOperations.wantedProducts.get(productNumber).getBuyPrice()));
                     }
 
             }
@@ -85,10 +91,10 @@ public class wantedProductsPage extends JPanel {
 
     private void deleteData(){      //when its less than 10 rows
         for(int i = 0; i < 10;i++){
-            for(int j = 0; j < 3;j++) {
+            for(int j = 0; j < 6;j++) {
                 switch (j) {
                     case 0 -> wantedProductsArr[i][j].setText(" _ ");
-                    case 1, 2 -> wantedProductsArr[i][j].setText("");
+                    case 1 , 2 , 5 -> wantedProductsArr[i][j].setText(" ");
                 }
             }
 
@@ -128,6 +134,8 @@ public class wantedProductsPage extends JPanel {
 
         previousBtn.setBounds(200 + 150,572,50,20);
 
+        exportBtn.setBounds(165,572,75,20);
+
         int border = 0;
         nextBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
         previousBtn.setBorder(BorderFactory.createEmptyBorder(border,border,border,border));
@@ -137,7 +145,7 @@ public class wantedProductsPage extends JPanel {
     }
 
     private void headsDesign(){
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < 5; i++) {
             switch (i) {
                 case 0 -> {
                     headFields[i] = new JTextField("");
@@ -153,7 +161,11 @@ public class wantedProductsPage extends JPanel {
                 }
                 case 3 -> {
                     headFields[i] = new JTextField("Operation");
-                    headFields[i].setBounds(360 + 300, 0, 200, 50);
+                    headFields[i].setBounds(360 + 300, 0, 175, 50);
+                }
+                case 4 ->{
+                    headFields[i] = new JTextField("        Price");
+                    headFields[i].setBounds(360 + 460, 0, 96, 50);
                 }
             }
             headFields[i].setBackground(Color.gray);
@@ -166,7 +178,7 @@ public class wantedProductsPage extends JPanel {
 
     private void fieldsDesign(){
         for(int i = 0; i < 10;i++){
-            for(int j = 0; j < 5;j++) {
+            for(int j = 0; j < 6;j++) {
 
                 wantedProductsArr[i][j] = new JTextField("");
                 wantedProductsArr[i][j].setHorizontalAlignment(0);
@@ -190,6 +202,11 @@ public class wantedProductsPage extends JPanel {
                         wantedProductsArr[i][j].setText(" X ");
                         wantedProductsArr[i][j].setForeground(Color.red);
                     }
+                    case 5->{
+                        wantedProductsArr[i][j].setBounds(545 + 300, 51 * (i + 1), 70, 48);
+                        wantedProductsArr[i][j].setText(" _ ");
+                        wantedProductsArr[i][j].setForeground(Color.black);
+                    }
                 }
 
                 int x = i, y = j;
@@ -200,10 +217,9 @@ public class wantedProductsPage extends JPanel {
                             String proName = wantedProductsArr[x][1].getText();
                             String proCategory = wantedProductsArr[x][2].getText();
                             int oldQuantity = Integer.parseInt(wantedProductsArr[x][0].getText());
-                            int recordNumber = x;
 
-                            if (y == 3) {
-                                new increaseInQuantityFrame(proName, proCategory, oldQuantity, recordNumber);
+                                if (y == 3) {
+                                new increaseInQuantityFrame(proName, proCategory, oldQuantity, x);
                                 frame.dispose();
                             } else if (y == 4) {
                                 new ConfirmPopUp(frame, proName,proCategory,x,true);
@@ -223,22 +239,28 @@ public class wantedProductsPage extends JPanel {
         frame.add(nextBtn);
         frame.add(previousBtn);
         frame.add(pageNumberTF);
-        for(int i = 0; i < 4;i++){
+        for(int i = 0; i < 5;i++){
             frame.add(headFields[i]);
         }
         for(int i = 0; i < 10;i++){
-            for(int j = 0; j < 5;j++) {
+            for(int j = 0; j < 6;j++) {
                 frame.add(wantedProductsArr[i][j]);
             }
         }
+        frame.add(exportBtn);
         frame.add(this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Wanted Products");
-        frame.setSize(575 + 300,650);
+        frame.setSize(575 + 360,650);
         frame.setLocation(400,60);
         frame.setVisible(true);
         frame.setResizable(false);
+    }
+
+    private String getTodayDateString() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(new Date());
     }
 
 }

@@ -2,7 +2,6 @@ package  pages;
 
 import Database.DatabaseHelper;
 import Database.databaseOperations;
-import classes.Product;
 
 import javax.swing.*;
 
@@ -11,16 +10,32 @@ public class ConfirmPopUp {
     private int result;
     private String productName;
     public ConfirmPopUp (){ }
-    public ConfirmPopUp(JFrame parent,String price,String productName , String quantity){
-        JDialog.setDefaultLookAndFeelDecorated(true);
-        this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure That You Want To Sell " + quantity + " Products From "+ productName+" For " + price +" L.E ?", "Confirm",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (result == JOptionPane.NO_OPTION) {
-            System.out.println("No button clicked");
-        } else if (result == JOptionPane.YES_OPTION) {
-            System.out.println("Yes button clicked");
-        } else if (result == JOptionPane.CLOSED_OPTION) {
-            System.out.println("JOptionPane closed");
+    public ConfirmPopUp(JFrame parent,String price,String productName , String quantity,int number){
+        switch (number) {
+           case 1-> {
+               JDialog.setDefaultLookAndFeelDecorated(true);
+               this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure That You Want To Sell " + quantity + " Products From " + productName + " For " + price + " L.E ?", "Confirm",
+                       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+               if (result == JOptionPane.NO_OPTION) {
+                   System.out.println("No button clicked");
+               } else if (result == JOptionPane.YES_OPTION) {
+                   System.out.println("Yes button clicked");
+               } else if (result == JOptionPane.CLOSED_OPTION) {
+                   System.out.println("JOptionPane closed");
+               }
+           }
+           case 2->{
+               JDialog.setDefaultLookAndFeelDecorated(true);
+               this.result = JOptionPane.showConfirmDialog(parent, "هل تود اضافه هذه العمليه كا آجل؟", "Confirm",
+                       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+               if (result == JOptionPane.NO_OPTION) {
+                   System.out.println("No button clicked");
+               } else if (result == JOptionPane.YES_OPTION) {
+                   System.out.println("Yes button clicked");
+               } else if (result == JOptionPane.CLOSED_OPTION) {
+                   System.out.println("JOptionPane closed");
+               }
+           }
         }
     }
 
@@ -71,6 +86,42 @@ public class ConfirmPopUp {
             case 2 -> {
                 JDialog.setDefaultLookAndFeelDecorated(true);
                 this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to Export Sales PDF For All Sales That Happen in the system ?", "Confirm",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.NO_OPTION) {
+                    System.out.println("No button clicked");
+                } else if (result == JOptionPane.YES_OPTION) {
+                    System.out.println("Yes button clicked");
+                } else if (result == JOptionPane.CLOSED_OPTION) {
+                    System.out.println("JOptionPane closed");
+                }
+            }
+            case 3->{
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to Export Sales PDF For All Products That Stored in the system ?", "Confirm",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.NO_OPTION) {
+                    System.out.println("No button clicked");
+                } else if (result == JOptionPane.YES_OPTION) {
+                    System.out.println("Yes button clicked");
+                } else if (result == JOptionPane.CLOSED_OPTION) {
+                    System.out.println("JOptionPane closed");
+                }
+            }
+            case 4->{
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to Export PDF For All Wanted Products That Stored in the system ?", "Confirm",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.NO_OPTION) {
+                    System.out.println("No button clicked");
+                } else if (result == JOptionPane.YES_OPTION) {
+                    System.out.println("Yes button clicked");
+                } else if (result == JOptionPane.CLOSED_OPTION) {
+                    System.out.println("JOptionPane closed");
+                }
+            }
+            case 5->{
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                this.result = JOptionPane.showConfirmDialog(parent, "Are You Sure You Want to Export PDF For All Returns Products That Stored in the system ?", "Confirm",
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (result == JOptionPane.NO_OPTION) {
                     System.out.println("No button clicked");

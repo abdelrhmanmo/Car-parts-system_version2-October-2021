@@ -3,7 +3,6 @@ package Database;
 import classes.Product;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class databaseOperations {
     /*The array list that will get data from database (please check getAllData function in DatabaseHelper Class)*/
@@ -20,6 +19,8 @@ public class databaseOperations {
 
     public static ArrayList<Product> wantedProducts = new ArrayList<>();
 
+    public static ArrayList<Product> returns  = new ArrayList<>();
+
     public databaseOperations(){
 
         //try to run after deleting system.db
@@ -29,6 +30,7 @@ public class databaseOperations {
         DatabaseHelper.getAllCategories();
         DatabaseHelper.getAllSalesData();
         DatabaseHelper.getWantedProducts();
+        DatabaseHelper.getAllReturnsData();
     }
     public static int search(String productName , String category){
 
