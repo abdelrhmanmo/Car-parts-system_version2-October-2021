@@ -97,9 +97,9 @@ public class ReturnsPage extends JPanel {
                     case 5 -> productsArr[i][j].setText(String.valueOf(databaseOperations.returns.get(productNumber).getCategory()));
                     case 6 -> {
                         if (databaseOperations.returns.get(productNumber).isReturns()) {
-                            productsArr[i][j].setBackground(Color.GREEN);
+                            productsArr[i][j].setBackground(Color.red);
                         } else {
-                            productsArr[i][j].setBackground(Color.RED);
+                            productsArr[i][j].setBackground(Color.green);
                         }
                     }
                 }
@@ -206,20 +206,22 @@ public class ReturnsPage extends JPanel {
 
                         if(y == 6){
 
-                            if(productsArr[x][y].getBackground().equals(Color.GREEN)){
+                            if(productsArr[x][y].getBackground().equals(Color.RED)){
                                 System.out.println("Green");
                                 if(new ConfirmRemovePopUp(frame,1,"Remove").getResult()==0) {
                                     productsArr[x][y].setBackground(Color.RED);
-                                    DatabaseHelper.setReturns(false, productsArr[x][0].getText(), productsArr[x][5].getText());
-                                    DatabaseHelper.getAllReturnsData();
+                                    DatabaseHelper.setReturns(false, productsArr[x][0].getText(), productsArr[x][5].getText(),productsArr[x][4].getText());
                                     DatabaseHelper.getAllSalesData();
+                                    DatabaseHelper.getAllData();
+                                    DatabaseHelper.getAllReturnsData();
+                                    DatabaseHelper.getWantedProducts();
                                     frame.dispose();
                                     new ReturnsPage();
                                 }
                             }else{
                                 if(new ConfirmRemovePopUp(frame,1,"Add").getResult()==0) {
                                     productsArr[x][y].setBackground(Color.GREEN);
-                                    DatabaseHelper.setReturns(true,productsArr[x][0].getText(),productsArr[x][5].getText());
+                                    DatabaseHelper.setReturns(true,productsArr[x][0].getText(),productsArr[x][5].getText(),productsArr[x][4].getText());
                                     DatabaseHelper.getAllReturnsData();
                                     DatabaseHelper.getAllSalesData();
                                     frame.dispose();

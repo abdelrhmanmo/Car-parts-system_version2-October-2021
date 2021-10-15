@@ -210,8 +210,8 @@ public class DatabaseHelper {
         getAllSalesData();
     }
 
-    public static void setReturns(boolean newReturnsValue,String productName, String Category){
-        String sql = "UPDATE soldProducts SET returns = ? WHERE product_name = ? AND  category = ?";
+    public static void setReturns(boolean newReturnsValue,String productName, String Category,String date){
+        String sql = "UPDATE soldProducts SET returns = ? WHERE product_name = ? AND  category = ? AND selling_date = ? ";
 
         System.out.println(newReturnsValue+" "+productName + " "+Category);
         try  {
@@ -223,6 +223,7 @@ public class DatabaseHelper {
             pstmt.setBoolean(1, newReturnsValue);
             pstmt.setString(2, productName);
             pstmt.setString(3,Category);
+            pstmt.setString(4,date);
             System.out.println(newReturnsValue);
             // update
             pstmt.executeUpdate();

@@ -286,6 +286,8 @@ public class SellPage extends JPanel {
                         searchField.setText("");
                         DatabaseHelper.getAllSalesData();
                         DatabaseHelper.getAllData();
+                        DatabaseHelper.getAllReturnsData();
+                        DatabaseHelper.getWantedProducts();
                     }
                     else {
                         soldLbl.setBounds(240, 370, 150, 20);
@@ -304,6 +306,8 @@ public class SellPage extends JPanel {
                         searchField.setText("");
                         DatabaseHelper.getAllSalesData();
                         DatabaseHelper.getAllData();
+                        DatabaseHelper.getAllReturnsData();
+                        DatabaseHelper.getWantedProducts();
                     }
                 }
                 else{
